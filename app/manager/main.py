@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import secrets
+import sys
 from pathlib import Path
 
 from fastapi import FastAPI, Request
@@ -74,4 +75,4 @@ async def _payload(request: Request) -> dict:
     return result
 
 
-app = create_app()
+app = None if getattr(sys, 'frozen', False) else create_app()

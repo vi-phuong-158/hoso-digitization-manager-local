@@ -10,7 +10,7 @@ from pathlib import Path
 
 from pypdf import PdfReader
 
-from ..pdf_inventory import sha256_file
+from app.manager_core.hashing import sha256_file
 from .config import Settings
 from .db import Database
 from .parser import FolderMetadata, FilenameMetadata, parse_folder_name, parse_pdf_filename

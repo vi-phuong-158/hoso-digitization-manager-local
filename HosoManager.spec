@@ -8,7 +8,7 @@ PROVENANCE = Path(os.environ["HOSO_BUILD_PROVENANCE"])
 if not PROVENANCE.is_file():
     raise SystemExit("HOSO_BUILD_PROVENANCE must identify an existing provenance JSON")
 BUNDLE_NAME = os.environ.get("HOSO_BUNDLE_NAME", "HosoManager")
-hidden = collect_submodules("app.manager")
+hidden = collect_submodules("app.manager") + collect_submodules("app.manager_core")
 a = Analysis(
     [str(ROOT / "app" / "manager" / "entrypoint.py")],
     pathex=[str(ROOT)],

@@ -1,0 +1,1 @@
+"""Deterministic contracts used by the standalone local Manager."""

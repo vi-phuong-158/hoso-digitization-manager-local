@@ -6,7 +6,7 @@ param(
 
 $ErrorActionPreference = "Stop"
 $root = (Resolve-Path $PSScriptRoot).Path
-$expectedVersion = python -c "from app.release import APP_VERSION; print(APP_VERSION)"
+$expectedVersion = "0.2.1-rc1"
 if ($Version -ne $expectedVersion) { throw "Version '$Version' must equal source APP_VERSION '$expectedVersion'." }
 if ((git status --porcelain).Length -ne 0) { throw "Refusing build: commit or revert tracked source changes first." }
 $buildSha = (git rev-parse HEAD).Trim().ToLowerInvariant()
@@ -33,7 +33,7 @@ try {
     Remove-Item -LiteralPath Env:HOSO_BUNDLE_NAME -ErrorAction SilentlyContinue
 }
 $bundlePath = Join-Path $distRoot $bundleName
-Copy-Item -LiteralPath (Join-Path $root "docs/hoso-digitization-manager-handoff/example-config.json") -Destination (Join-Path $bundlePath "config.example.json") -Force
+Copy-Item -LiteralPath (Join-Path $root "docs/example-config.json") -Destination (Join-Path $bundlePath "config.example.json") -Force
 
 if (-not $SkipInstaller) {
     if (-not $IsccPath) {

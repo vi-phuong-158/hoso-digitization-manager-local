@@ -77,7 +77,7 @@ def parse_pdf_filename(filename: str, taxonomy: TaxonomyAdapter) -> FilenameMeta
     slug_name = ".".join(name_parts)
     if item is None:
         return FilenameMetadata(filename=filename, taxonomy_code=code, sequence_no=sequence, slug_name=slug_name, status="FILE_NGOAI_TAXONOMY")
-    canonical_slug = item.catalog_filename_slug if hasattr(item, "catalog_filename_slug") else taxonomy.catalog.filename_base(code).split(".", 1)[1]
+    canonical_slug = item.catalog_filename_slug
     return FilenameMetadata(
         filename=filename,
         taxonomy_code=code,

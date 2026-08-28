@@ -1,31 +1,37 @@
 {% extends "base.html" %}
-{% block title %}Quét / Trí tuệ nhân tạo — Hồ sơ Đảng viên{% endblock %}
+{% block title %}Quét và đồng bộ dữ liệu — Hồ sơ Đảng viên{% endblock %}
 
 {% block content %}
 <section class="page-head">
   <div>
     <p class="eyebrow">QUÉT VÀ ĐỒNG BỘ DỮ LIỆU</p>
-    <h1>Quét dữ liệu & Đồng bộ</h1>
-    <p class="lead-muted">Xử lý phân loại nâng cao nằm trong quy trình số hóa. HosoManager Local hoạt động độc lập và đồng bộ dữ liệu từ kho lưu trữ cục bộ.</p>
+    <h1>Quét kho hồ sơ</h1>
+    <p class="lead-muted">Quét lại kho hồ sơ trên máy tính để cập nhật danh sách hồ sơ, tài liệu, số trang và tiến độ.</p>
   </div>
 </section>
 
 <div class="panel" style="max-width: 840px;">
   <div class="panel-header">
-    <h2>Quét lại kho dữ liệu hồ sơ</h2>
+    <h2>Quét kho hồ sơ</h2>
   </div>
+  
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;color:#1b5e20;font-size:13.5px;font-weight:600;">
+    <span class="status-dot" style="background:#1b5e20;"></span>
+    <span>Hoạt động cục bộ — không tải tài liệu lên Internet.</span>
+  </div>
+
   <p style="color:var(--ink-800);margin-bottom:18px;">
-    Hệ thống sẽ duyệt qua toàn bộ các thư mục Đảng viên trong kho lưu trữ, kiểm tra file PDF, trích xuất số trang, đối soát danh mục 104 loại và tính toán tiến độ hoàn thành.
+    Hệ thống sẽ duyệt qua toàn bộ các thư mục Đảng viên trong kho lưu trữ trên máy, kiểm tra tệp PDF, trích xuất số trang, đối soát danh mục 104 loại và tính toán tiến độ hoàn thành.
   </p>
 
   <div style="background:var(--surface-subtle);border:1px solid var(--border-subtle);border-radius:10px;padding:16px 20px;margin-bottom:20px;">
-    <div style="font-size:13px;color:var(--ink-600);margin-bottom:4px;">Thư mục gốc kho tài liệu:</div>
+    <div style="font-size:13px;color:var(--ink-600);margin-bottom:4px;">Thư mục lưu trữ hồ sơ:</div>
     <div class="path">{{ settings.data_root }}</div>
   </div>
 
   <button class="button primary" id="btn-run-scan" onclick="runScan()">
     <svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg>
-    <span>Bắt đầu quét lại toàn bộ kho</span>
+    <span>Quét lại toàn bộ kho hồ sơ</span>
   </button>
   
   <p id="scan-result" class="form-message" style="margin-top:14px;"></p>
@@ -36,7 +42,7 @@ async function runScan() {
   const btn = document.getElementById('btn-run-scan');
   const result = document.getElementById('scan-result');
   btn.disabled = true;
-  result.textContent = 'Đang tiến hành quét thư mục...';
+  result.textContent = 'Đang quét kho hồ sơ...';
   
   const token = document.cookie.split('csrf_token=')[1]?.split(';')[0] || '';
   try {
@@ -47,14 +53,15 @@ async function runScan() {
     const d = await r.json();
     btn.disabled = false;
     if (r.ok) {
-      result.textContent = `Quét hoàn tất: Đã nhận diện ${d.folders_seen || 0} thư mục hồ sơ (${d.documents_seen || 0} tài liệu).`;
+      result.textContent = `Quét hoàn tất: đã cập nhật ${d.folders_seen || 0} hồ sơ và ${d.documents_seen || 0} tài liệu.`;
     } else {
-      result.textContent = d.detail || 'Không thực hiện được quét dữ liệu.';
+      result.textContent = d.detail || 'Không thể quét kho hồ sơ. Vui lòng kiểm tra lại thư mục lưu trữ.';
     }
   } catch (e) {
     btn.disabled = false;
-    result.textContent = 'Lỗi kết nối khi thực hiện quét.';
+    result.textContent = 'Không thể quét kho hồ sơ. Vui lòng kiểm tra lại thư mục lưu trữ.';
   }
 }
 </script>
 {% endblock %}
+

@@ -35,19 +35,19 @@ STATUS_LABELS: dict[str, str] = {
 
 PARSE_STATUS_LABELS: dict[str, str] = {
     "OK": "Hợp lệ",
-    "MALFORMED_NAME": "Tên file không chuẩn",
+    "MALFORMED_NAME": "Tên tệp không chuẩn",
     "FILE_NGOAI_TAXONOMY": "Ngoài danh mục chuẩn",
-    "FILE_KHONG_DOC_DUOC": "Không đọc được file",
-    "FILE_BI_THIEU": "File bị thiếu",
+    "FILE_KHONG_DOC_DUOC": "Không đọc được tệp",
+    "FILE_BI_THIEU": "Tệp bị thiếu",
     "ERROR": "Lỗi phân tích",
 }
 
 WARNING_TYPE_LABELS: dict[str, str] = {
     "SAI_TEN_THU_MUC": "Sai tên thư mục",
-    "SAI_TEN_FILE": "Sai tên file",
+    "SAI_TEN_FILE": "Sai tên tệp",
     "FILE_NGOAI_TAXONOMY": "Ngoài danh mục chuẩn",
     "TRUNG_TAI_LIEU": "Trùng lặp tài liệu",
-    "FILE_KHONG_DOC_DUOC": "Không đọc được file",
+    "FILE_KHONG_DOC_DUOC": "Không đọc được tệp",
     "CHANGED_AFTER_COMPLETION": "Thay đổi sau khi hoàn thành",
     "REVIEW_PENDING": "Chờ rà soát",
     "CAN_XAC_MINH": "Cần xác minh",

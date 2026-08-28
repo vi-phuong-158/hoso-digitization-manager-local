@@ -21,7 +21,7 @@
   <div class="step-card">
     <div class="step-badge">1</div>
     <div>
-      <h2>Chọn hồ sơ Đảng viên và file scan</h2>
+      <h2>Chọn hồ sơ Đảng viên và tệp scan</h2>
       <div style="margin-bottom:16px;">
         <label for="case_id" style="display:block;font-weight:600;font-size:13.5px;margin-bottom:6px;">Hồ sơ tiếp nhận</label>
         <select id="case_id" class="wide-select" style="max-width:600px;width:100%;">
@@ -36,10 +36,10 @@
 
       <div class="dropzone" id="dropzone-area">
         <svg viewBox="0 0 24 24" style="width:36px;height:36px;stroke:var(--gold-600);fill:none;stroke-width:1.5;margin-bottom:8px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-        <p style="font-weight:600;margin-bottom:4px;color:var(--ink-950);">Kéo thả file ảnh scan hoặc PDF vào đây</p>
-        <p class="muted" style="margin-bottom:12px;font-size:12.5px;">Hỗ trợ .jpg, .jpeg, .png, .pdf (cho phép chọn nhiều file)</p>
+        <p style="font-weight:600;margin-bottom:4px;color:var(--ink-950);">Kéo thả tệp ảnh scan hoặc PDF vào đây</p>
+        <p class="muted" style="margin-bottom:12px;font-size:12.5px;">Hỗ trợ .jpg, .jpeg, .png, .pdf (cho phép chọn nhiều tệp)</p>
         <input id="files" type="file" accept=".jpg,.jpeg,.png,.pdf" multiple style="display:none;">
-        <button type="button" class="button sm" onclick="document.getElementById('files').click()">Chọn file từ máy tính</button>
+        <button type="button" class="button sm" onclick="document.getElementById('files').click()">Chọn tệp từ máy tính</button>
         <div id="file-selection-list" style="margin-top:10px;font-size:12.5px;color:var(--ink-800);font-weight:500;"></div>
       </div>
 
@@ -56,7 +56,7 @@
     <div class="step-badge">2</div>
     <div style="min-width:0;">
       <h2>Sắp xếp thứ tự và xoay trang</h2>
-      <p class="muted" style="margin-bottom:12px;">Kéo thả thẻ trang để đổi vị trí. Nhấn nút xoay để chỉnh hướng tài liệu. File gốc trên máy không bị thay đổi.</p>
+      <p class="muted" style="margin-bottom:12px;">Kéo thả thẻ trang để đổi vị trí. Nhấn nút xoay để chỉnh hướng tài liệu. Tệp gốc trên máy không bị thay đổi.</p>
       <div id="pages" class="page-grid">
         <p class="muted" style="grid-column:1/-1;padding:24px 0;text-align:center;">Chưa có trang xem trước. Vui lòng hoàn thành Bước 1.</p>
       </div>
@@ -91,7 +91,7 @@
       </div>
 
       <div style="background:var(--surface-subtle);border:1px solid var(--border-subtle);padding:12px 16px;border-radius:10px;max-width:600px;">
-        <span style="font-size:12.5px;color:var(--ink-600);display:block;">Tên file PDF chuẩn hóa dự kiến:</span>
+        <span style="font-size:12.5px;color:var(--ink-600);display:block;">Tên tệp PDF chuẩn hóa dự kiến:</span>
         <strong id="filename-preview" style="font-size:14px;color:var(--red-800);font-family:var(--font-mono);">Chưa chọn loại</strong>
       </div>
     </div>
@@ -106,7 +106,7 @@
         <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
         <span>Lưu tài liệu vào hồ sơ</span>
       </button>
-      <button class="button" id="discard" disabled>Hủy / Chọn lại file</button>
+      <button class="button" id="discard" disabled>Hủy / Chọn lại tệp</button>
     </div>
     <p id="save-message" class="form-message" role="status"></p>
   </div>
@@ -151,7 +151,7 @@ function updateSelectedFilesList() {
   if (count === 0) {
     listEl.textContent = '';
   } else {
-    listEl.textContent = `Đã chọn ${count} file: ` + Array.from(fileInput.files).map(f => f.name).slice(0, 3).join(', ') + (count > 3 ? ` và ${count - 3} file khác` : '');
+    listEl.textContent = `Đã chọn ${count} tệp: ` + Array.from(fileInput.files).map(f => f.name).slice(0, 3).join(', ') + (count > 3 ? ` và ${count - 3} tệp khác` : '');
   }
 }
 
@@ -235,7 +235,7 @@ async function updateFilename() {
       $('filename-preview').textContent = data.filename;
     }
   } catch (err) {
-    $('filename-preview').textContent = 'Lỗi tính tên file';
+    $('filename-preview').textContent = 'Lỗi tính tên tệp';
   }
 }
 
@@ -243,9 +243,9 @@ function updateSummary() {
   const type = $('type_id').selectedOptions[0]?.textContent || 'Chưa chọn loại';
   const caseName = $('case_id').selectedOptions[0]?.textContent || '';
   if (state.pages.length && selectedCase() && $('type_id').value) {
-    $('confirm-summary').innerHTML = `Hồ sơ: <strong>${caseName}</strong><br>Loại: <strong>${type}</strong> · <strong>${state.pages.length} trang</strong><br>Tên file đích: <strong style="color:var(--red-800);font-family:var(--font-mono);">${$('filename-preview').textContent}</strong>`;
+    $('confirm-summary').innerHTML = `Hồ sơ: <strong>${caseName}</strong><br>Loại: <strong>${type}</strong> · <strong>${state.pages.length} trang</strong><br>Tên tệp đích: <strong style="color:var(--red-800);font-family:var(--font-mono);">${$('filename-preview').textContent}</strong>`;
   } else {
-    $('confirm-summary').textContent = 'Chưa đủ thông tin để lưu. Vui lòng chọn hồ sơ, tải file và chọn loại tài liệu.';
+    $('confirm-summary').textContent = 'Chưa đủ thông tin để lưu. Vui lòng chọn hồ sơ, tải tệp và chọn loại tài liệu.';
   }
   $('save').disabled = !(state.token && selectedCase() && state.pages.length && $('type_id').value);
   $('discard').disabled = !state.token;
@@ -258,7 +258,7 @@ $('case_id').addEventListener('change', () => { updateFilename(); updateSummary(
 $('prepare').addEventListener('click', async () => {
   showError('');
   if (!selectedCase()) return showError('Hãy chọn hồ sơ Đảng viên tiếp nhận.');
-  if (!$('files').files.length) return showError('Hãy chọn ít nhất một ảnh scan hoặc file PDF.');
+  if (!$('files').files.length) return showError('Hãy chọn ít nhất một ảnh scan hoặc tệp PDF.');
   
   const form = new FormData();
   form.append('case_id', selectedCase());

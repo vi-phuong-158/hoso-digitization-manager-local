@@ -87,9 +87,11 @@ def test_ui_label_mappings():
     assert ui_label("CHUA_XU_LY") == "Chưa xử lý"
     assert ui_label("HOAN_THANH") == "Hoàn thành"
     assert ui_label("OK") == "Hợp lệ"
-    assert ui_label("MALFORMED_NAME") == "Tên file không chuẩn"
+    assert ui_label("MALFORMED_NAME") == "Tên tệp không chuẩn"
     assert ui_label("SAI_TEN_THU_MUC") == "Sai tên thư mục"
-    assert ui_label("SAI_TEN_FILE") == "Sai tên file"
+    assert ui_label("SAI_TEN_FILE") == "Sai tên tệp"
+    assert ui_label("FILE_KHONG_DOC_DUOC") == "Không đọc được tệp"
+    assert ui_label("FILE_BI_THIEU") == "Tệp bị thiếu"
     assert ui_label("AUTO_STATUS_CHANGED") == "Tự động cập nhật trạng thái"
     assert ui_label("UNKNOWN_FUTURE_CODE") == "Chưa xác định"
     assert ui_label(None) == "Chưa xác định"
@@ -149,7 +151,33 @@ def test_zero_raw_enums_in_all_rendered_pages(tmp_path: Path):
         assert len(matches) == 0, f"Raw enum identifiers found in visible text of {route}: {matches}"
 
 
-def test_zero_unintended_english_in_all_rendered_pages(tmp_path: Path):
+def test_scan_terminology_and_zero_ai_mentions(tmp_path: Path):
+    client, case_id = _setup_client(tmp_path)
+    
+    # 1. Base navigation contains "Quét dữ liệu" and NO "AI" / "Trí tuệ nhân tạo"
+    resp_dash = client.get("/")
+    dash_text = _extract_visible_text(resp_dash.text)
+    assert "Quét dữ liệu" in dash_text
+    assert "Quét / AI" not in dash_text
+    assert "Quét / Trí tuệ nhân tạo" not in dash_text
+    assert "Scan / AI" not in dash_text
+
+    # 2. /scan page contains local scan explanation and privacy message
+    resp_scan = client.get("/scan")
+    scan_text = _extract_visible_text(resp_scan.text)
+    assert "Quét kho hồ sơ" in scan_text
+    assert "Hoạt động cục bộ" in scan_text
+    assert "không tải tài liệu lên Internet" in scan_text
+    assert "Thư mục lưu trữ hồ sơ:" in scan_text
+    assert "Quét lại toàn bộ kho hồ sơ" in scan_text
+    assert "Trí tuệ nhân tạo" not in scan_text
+    assert "AI" not in scan_text
+    assert "Pipeline" not in scan_text
+    assert "HosoManager Local" not in scan_text
+    assert "Data Root" not in scan_text
+
+
+def test_zero_unintended_english_and_forbidden_terms(tmp_path: Path):
     client, case_id = _setup_client(tmp_path)
     routes = [
         "/",
@@ -164,7 +192,10 @@ def test_zero_unintended_english_in_all_rendered_pages(tmp_path: Path):
         "/settings",
     ]
 
-    forbidden_english = [
+    forbidden_patterns = [
+        re.compile(r"\bAI\b"),
+        re.compile(r"\bTrí tuệ nhân tạo\b", re.IGNORECASE),
+        re.compile(r"\bArtificial Intelligence\b", re.IGNORECASE),
         re.compile(r"\bLocal\s*/\s*Offline\b", re.IGNORECASE),
         re.compile(r"\bData\s*Root\b", re.IGNORECASE),
         re.compile(r"\bReview\s*Required\b", re.IGNORECASE),
@@ -175,9 +206,9 @@ def test_zero_unintended_english_in_all_rendered_pages(tmp_path: Path):
         resp = client.get(route)
         visible_text = _extract_visible_text(resp.text)
 
-        for pattern in forbidden_english:
+        for pattern in forbidden_patterns:
             match = pattern.search(visible_text)
-            assert match is None, f"Forbidden English pattern '{pattern.pattern}' found in {route}: '{match.group(0) if match else ''}'"
+            assert match is None, f"Forbidden pattern '{pattern.pattern}' found in {route}: '{match.group(0) if match else ''}'"
 
 
 def test_vietnamese_diacritics_rendered_properly(tmp_path: Path):

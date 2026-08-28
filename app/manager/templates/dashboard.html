@@ -166,7 +166,7 @@
 </div>
 
 <div class="scan-meta-bar">
-  <span><strong>Trạng thái kho tài liệu:</strong> Sẵn sàng · Hoạt động cục bộ</span>
+  <span><strong>Trạng thái kho hồ sơ:</strong> Sẵn sàng · Hoạt động cục bộ</span>
   <span>Lần quét gần nhất: <strong class="tabular">{{ last_run.ended_at|format_datetime if last_run and last_run.ended_at else 'Chưa quét' }}</strong></span>
 </div>
 <div id="dashboard-scan-message" class="form-error" role="alert" style="display:none;margin-top:8px;"></div>
@@ -187,14 +187,14 @@ async function postScan() {
       location.reload();
     } else {
       if (msg) {
-        msg.textContent = '[!] Không thực hiện được quét dữ liệu.';
+        msg.textContent = '[!] Không thể quét kho hồ sơ.';
         msg.style.display = 'inline-block';
       }
       if (btn) { btn.disabled = false; btn.textContent = 'Quét lại dữ liệu'; }
     }
   } catch (err) {
     if (msg) {
-      msg.textContent = '[!] Lỗi kết nối khi quét dữ liệu.';
+      msg.textContent = '[!] Lỗi kết nối khi quét kho hồ sơ.';
       msg.style.display = 'inline-block';
     }
     if (btn) { btn.disabled = false; btn.textContent = 'Quét lại dữ liệu'; }

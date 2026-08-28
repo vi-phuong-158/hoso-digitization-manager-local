@@ -1539,6 +1539,16 @@ textarea:focus-visible {
   .brand-subtitle {
     font-size: 10px;
   }
+  .page-head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 0 4px;
+  }
+  .metric-hero-foot {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
   .dashboard-grid {
     grid-template-columns: 1fr;
   }

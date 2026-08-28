@@ -152,7 +152,7 @@
       <li>
         <div style="display:flex;justify-content:space-between;align-items:center;">
           <a href="/cases/{{ row.id }}">{{ row.person_name_display or row.folder_name }}</a>
-          <span class="status status-{{ row.effective_status }}">{{ row.effective_status }}</span>
+          <span class="status status-{{ row.effective_status }}">{{ row.effective_status|ui_label }}</span>
         </div>
         <span>{% if row.warning_count %}<strong style="color:var(--red-700);">{{ row.warning_count }} cảnh báo</strong> · {% endif %}{{ row.unit_code or 'Chưa phân đơn vị' }}</span>
       </li>
@@ -167,7 +167,7 @@
 
 <div class="scan-meta-bar">
   <span><strong>Trạng thái kho tài liệu:</strong> Sẵn sàng · Hoạt động cục bộ</span>
-  <span>Lần quét gần nhất: <strong class="tabular">{{ last_run.ended_at if last_run else 'Chưa quét' }}</strong></span>
+  <span>Lần quét gần nhất: <strong class="tabular">{{ last_run.ended_at|format_datetime if last_run and last_run.ended_at else 'Chưa quét' }}</strong></span>
 </div>
 <div id="dashboard-scan-message" class="form-error" role="alert" style="display:none;margin-top:8px;"></div>
 

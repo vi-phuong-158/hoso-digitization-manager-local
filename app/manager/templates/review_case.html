@@ -32,7 +32,7 @@
     </div>
     {% for item in warnings %}
     <div class="warning">
-      <strong>{{ item.warning_type }}</strong> — {{ item.message }}
+      <strong>{{ item.warning_type|ui_label }}</strong> — {{ item.message }}
     </div>
     {% else %}
     <p style="color:#1b5e20;padding:12px 0;display:flex;align-items:center;gap:6px;">
@@ -64,7 +64,7 @@
             <td style="font-size:13px;">{{ item.name }}</td>
             <td>
               <span class="status status-{{ item.status }}" style="font-size:11.5px;padding:2px 7px;">
-                {{ item.status }}
+                {{ item.status|ui_label }}
               </span>
             </td>
             <td class="tabular" style="text-align:center;font-weight:600;">

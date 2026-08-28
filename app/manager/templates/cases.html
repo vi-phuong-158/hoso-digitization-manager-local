@@ -22,7 +22,7 @@
   <select name="status" aria-label="Lọc theo trạng thái">
     <option value="">-- Tất cả trạng thái --</option>
     {% for value in ['CHUA_XU_LY','DANG_SO_HOA','CHO_KIEM_TRA','CAN_BO_SUNG','HOAN_THANH'] %}
-    <option value="{{ value }}" {% if status==value %}selected{% endif %}>{{ value }}</option>
+    <option value="{{ value }}" {% if status==value %}selected{% endif %}>{{ value|ui_label }}</option>
     {% endfor %}
   </select>
 
@@ -90,7 +90,7 @@
           </div>
         </td>
         <td>
-          <span class="status status-{{ row.effective_status }}">{{ row.effective_status }}</span>
+          <span class="status status-{{ row.effective_status }}">{{ row.effective_status|ui_label }}</span>
         </td>
         <td style="text-align:center;">
           {% if row.warning_count %}

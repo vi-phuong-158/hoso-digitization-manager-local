@@ -61,6 +61,7 @@
     <span>Mở thư mục</span>
   </a>
 </div>
+<div id="case-action-message" class="form-error" role="alert" style="display:none;margin-bottom:16px;"></div>
 
 <div class="grid-2">
   <!-- Checklist 104 types -->
@@ -69,7 +70,7 @@
       <div>
         <h2>Checklist 104 loại tài liệu</h2>
       </div>
-      <input id="filter-checklist" placeholder="Lọc theo tên / mã..." style="font-size:12px;padding:5px 10px;border-radius:6px;border:1px solid var(--border-strong);width:160px;">
+      <input id="filter-checklist" class="filter-checklist-input" placeholder="Lọc theo tên / mã...">
     </div>
     <div class="checklist-scroll">
       <table id="checklist-table">
@@ -179,6 +180,8 @@
 
 <script>
 async function postAction(url) {
+  const msg = document.getElementById('case-action-message');
+  if (msg) { msg.style.display = 'none'; msg.textContent = ''; }
   const token = document.cookie.split('csrf_token=')[1]?.split(';')[0] || '';
   try {
     const r = await fetch(url, {
@@ -189,10 +192,16 @@ async function postAction(url) {
       location.reload();
     } else {
       const err = await r.json().catch(() => ({ detail: 'Không thực hiện được thao tác.' }));
-      alert(err.detail || 'Không thực hiện được thao tác.');
+      if (msg) {
+        msg.textContent = '[!] ' + (err.detail || 'Không thực hiện được thao tác.');
+        msg.style.display = 'inline-block';
+      }
     }
   } catch (e) {
-    alert('Lỗi kết nối khi gửi thao tác.');
+    if (msg) {
+      msg.textContent = '[!] Lỗi kết nối khi gửi thao tác.';
+      msg.style.display = 'inline-block';
+    }
   }
 }
 

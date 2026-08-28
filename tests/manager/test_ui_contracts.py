@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 import re
 from pathlib import Path
@@ -132,3 +132,58 @@ def test_pdf_view_link_contract(tmp_path: Path):
     assert pdf_resp.status_code == 200
     assert pdf_resp.headers["content-type"].startswith("application/pdf")
     assert pdf_resp.headers["content-disposition"] == "inline"
+
+
+def test_zero_window_alert_in_templates():
+    templates_dir = Path(__file__).resolve().parents[2] / "app" / "manager" / "templates"
+    for template_path in templates_dir.glob("*.html"):
+        content = template_path.read_text(encoding="utf-8")
+        assert re.search(r"\balert\(", content) is None, f"Found alert() call in template {template_path.name}"
+        assert "window.alert" not in content, f"Found window.alert in template {template_path.name}"
+
+
+def test_mobile_navigation_drawer_contracts(tmp_path: Path):
+    client, _ = _setup_app_client(tmp_path)
+    html = client.get("/").text
+
+    # Verify toggle button
+    assert 'id="nav-toggle"' in html
+    assert 'class="nav-toggle"' in html
+    assert 'aria-expanded="false"' in html
+    assert 'aria-controls="mobile-nav-drawer"' in html
+    assert 'aria-label="Mở menu điều hướng"' in html
+
+    # Verify drawer
+    assert 'id="mobile-nav-drawer"' in html
+    assert 'class="mobile-drawer"' in html
+    assert 'id="drawer-backdrop"' in html
+    assert 'class="drawer-backdrop"' in html
+    assert 'id="drawer-close"' in html
+
+    # Verify all 7 nav items exist in mobile drawer
+    assert 'class="mobile-nav-link" data-nav="dashboard"' in html
+    assert 'class="mobile-nav-link" data-nav="cases"' in html
+    assert 'class="mobile-nav-link" data-nav="add-document"' in html
+    assert 'class="mobile-nav-link" data-nav="scan"' in html
+    assert 'class="mobile-nav-link" data-nav="reviews"' in html
+    assert 'class="mobile-nav-link" data-nav="backup"' in html
+    assert 'class="mobile-nav-link" data-nav="settings"' in html
+
+
+def test_checklist_status_css_tokens_exist():
+    css_path = Path(__file__).resolve().parents[2] / "app" / "manager" / "static" / "manager.css"
+    css_text = css_path.read_text(encoding="utf-8")
+
+    required_classes = [
+        ".status-CO_TAI_LIEU",
+        ".status-KHONG_PHAT_SINH",
+        ".status-CHUA_XAC_DINH",
+        ".status-CAN_BO_SUNG",
+        ".status-HOAN_THANH",
+        ".status-DANG_SO_HOA",
+        ".status-CHO_KIEM_TRA",
+        ".status-CHUA_XU_LY",
+    ]
+
+    for cls in required_classes:
+        assert cls in css_text, f"Required status class {cls} missing from manager.css"

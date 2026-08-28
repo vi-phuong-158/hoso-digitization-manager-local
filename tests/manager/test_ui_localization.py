@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 import re
+from html.parser import HTMLParser
 from pathlib import Path
-from bs4 import BeautifulSoup
 from fastapi.testclient import TestClient
 from pypdf import PdfWriter
 
@@ -18,6 +18,34 @@ from app.manager.ui_labels import (
     format_datetime,
     ui_label,
 )
+
+
+class HTMLTextExtractor(HTMLParser):
+    def __init__(self) -> None:
+        super().__init__()
+        self.parts: list[str] = []
+        self._ignore = False
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        if tag.lower() in ("script", "style"):
+            self._ignore = True
+
+    def handle_endtag(self, tag: str) -> None:
+        if tag.lower() in ("script", "style"):
+            self._ignore = False
+
+    def handle_data(self, data: str) -> None:
+        if not self._ignore:
+            self.parts.append(data)
+
+    def text(self) -> str:
+        return " ".join(self.parts)
+
+
+def _extract_visible_text(html: str) -> str:
+    parser = HTMLTextExtractor()
+    parser.feed(html)
+    return parser.text()
 
 
 def _make_pdf(path: Path) -> None:
@@ -91,18 +119,13 @@ def test_zero_raw_enums_in_all_rendered_pages(tmp_path: Path):
         "/settings",
     ]
 
-    # Pattern for uppercase machine identifiers with underscore, e.g. CHO_KIEM_TRA
     raw_enum_re = re.compile(r"\b[A-Z]{2,}(?:_[A-Z0-9]+)+\b")
 
     for route in routes:
         resp = client.get(route)
         assert resp.status_code == 200, f"Route {route} failed with {resp.status_code}"
-        soup = BeautifulSoup(resp.text, "html.parser")
-        for s in soup(["script", "style"]):
-            s.decompose()
-        visible_text = soup.get_text()
+        visible_text = _extract_visible_text(resp.text)
 
-        # Check explicitly for forbidden raw status codes in visible text
         forbidden_raw = [
             "CHO_XAC_MINH",
             "DU_TAI_LIEU",
@@ -150,10 +173,7 @@ def test_zero_unintended_english_in_all_rendered_pages(tmp_path: Path):
 
     for route in routes:
         resp = client.get(route)
-        soup = BeautifulSoup(resp.text, "html.parser")
-        for s in soup(["script", "style"]):
-            s.decompose()
-        visible_text = soup.get_text()
+        visible_text = _extract_visible_text(resp.text)
 
         for pattern in forbidden_english:
             match = pattern.search(visible_text)
@@ -166,7 +186,6 @@ def test_vietnamese_diacritics_rendered_properly(tmp_path: Path):
     assert resp.status_code == 200
     html = resp.text
 
-    # Verify key Vietnamese strings with all diacritics
     assert "HỒ SƠ ĐẢNG VIÊN" in html
     assert "Quản lý số hóa nội bộ" in html
     assert "Hoạt động cục bộ" in html

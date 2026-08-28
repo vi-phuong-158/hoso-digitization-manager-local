@@ -1,3 +1,64 @@
 {% extends "base.html" %}
-{% block title %}Sao lưu — Hồ sơ Manager{% endblock %}
-{% block content %}<section class="page-head"><div><p class="eyebrow">AN TOÀN DỮ LIỆU</p><h1>Sao lưu</h1><p class="muted">Dữ liệu PDF nằm trực tiếp trong kho local; Manager chỉ sao lưu metadata SQLite.</p></div></section><section class="panel"><h2>Kho tài liệu chính thức</h2><p class="path">{{ data_root }}</p><h2>File metadata</h2><p class="path">{{ database_path }}</p><p>Để sao lưu đầy đủ, hãy sao chép toàn bộ thư mục kho tài liệu và file database sang thiết bị an toàn.</p><button class="button primary" id="backup">Sao lưu metadata SQLite</button><p id="backup-result" class="form-message"></p></section><script>document.getElementById('backup').onclick=async()=>{const r=await fetch('/backup/metadata');const d=await r.json();document.getElementById('backup-result').textContent=r.ok?'Đã tạo bản sao: '+d.path:(d.detail||'Không sao lưu được.');}</script>{% endblock %}
+{% block title %}Sao lưu — Hồ sơ Đảng viên{% endblock %}
+
+{% block content %}
+<section class="page-head">
+  <div>
+    <p class="eyebrow">AN TOÀN DỮ LIỆU CỤC BỘ</p>
+    <h1>Sao lưu dữ liệu hồ sơ</h1>
+    <p class="lead-muted">Tệp PDF được lưu trực tiếp trên ổ đĩa cục bộ. Hệ thống hỗ trợ kết xuất bản sao an toàn cho cơ sở dữ liệu SQLite.</p>
+  </div>
+</section>
+
+<div class="panel" style="max-width: 860px;">
+  <div class="panel-header">
+    <h2>Vị trí lưu trữ dữ liệu</h2>
+  </div>
+
+  <div style="margin-bottom:20px;">
+    <label style="display:block;font-size:13px;font-weight:600;color:var(--ink-800);margin-bottom:6px;">Thư mục lưu trữ hồ sơ:</label>
+    <div class="path">{{ data_root }}</div>
+  </div>
+
+  <div style="margin-bottom:24px;">
+    <label style="display:block;font-size:13px;font-weight:600;color:var(--ink-800);margin-bottom:6px;">Cơ sở dữ liệu chỉ mục (SQLite):</label>
+    <div class="path">{{ database_path }}</div>
+  </div>
+
+  <div style="background:var(--surface-subtle);border-left:3px solid var(--gold-600);padding:14px 18px;border-radius:0 8px 8px 0;margin-bottom:24px;">
+    <p style="margin:0;font-size:13.5px;color:var(--ink-850);">
+      <strong>Khuyến nghị an toàn:</strong> Định kỳ sao chép toàn bộ thư mục lưu trữ hồ sơ và tệp cơ sở dữ liệu sang ổ cứng ngoài hoặc thiết bị lưu trữ chuyên dụng để đảm bảo an toàn tuyệt đối.
+    </p>
+  </div>
+
+  <button class="button primary" id="backup">
+    <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+    <span>Sao lưu ngay cơ sở dữ liệu (.backup.sqlite)</span>
+  </button>
+  
+  <p id="backup-result" class="form-message" style="margin-top:14px;"></p>
+</div>
+
+<script>
+document.getElementById('backup').onclick = async () => {
+  const btn = document.getElementById('backup');
+  const result = document.getElementById('backup-result');
+  btn.disabled = true;
+  result.textContent = 'Đang tiến hành tạo bản sao lưu...';
+  
+  try {
+    const r = await fetch('/backup/metadata');
+    const d = await r.json();
+    btn.disabled = false;
+    if (r.ok) {
+      result.textContent = 'Đã tạo thành công bản sao lưu tại: ' + d.path;
+    } else {
+      result.textContent = d.detail || 'Không thể thực hiện sao lưu.';
+    }
+  } catch (err) {
+    btn.disabled = false;
+    result.textContent = 'Lỗi kết nối khi sao lưu.';
+  }
+};
+</script>
+{% endblock %}

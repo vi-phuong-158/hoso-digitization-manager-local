@@ -12,6 +12,7 @@ from fastapi.templating import Jinja2Templates
 from .config import Settings
 from .db import Database
 from .routes import dashboard_context, register_routes
+from .ui_labels import format_date, format_datetime, ui_label
 
 
 PACKAGE_DIR = Path(__file__).resolve().parent
@@ -24,6 +25,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.state.settings = cfg; app.state.db = db
     app.mount("/static", StaticFiles(directory=PACKAGE_DIR / "static"), name="static")
     templates = Jinja2Templates(directory=PACKAGE_DIR / "templates")
+    templates.env.filters["ui_label"] = ui_label
+    templates.env.filters["format_datetime"] = format_datetime
+    templates.env.filters["format_date"] = format_date
 
     @app.middleware("http")
     async def csrf_cookie(request: Request, call_next):

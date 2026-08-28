@@ -1,7 +1,118 @@
 {% extends "base.html" %}
-{% block title %}Hồ sơ — Digitization Manager{% endblock %}
+{% block title %}Danh sách hồ sơ — Hồ sơ Đảng viên{% endblock %}
+
 {% block content %}
-<section class="page-head"><div><p class="eyebrow">DANH SÁCH</p><h1>Hồ sơ</h1><p class="muted">Tìm kiếm theo họ tên hoặc CCCD.</p></div><a class="button primary" href="/">Tổng quan</a></section>
-<form class="filters" method="get"><input name="q" value="{{ q }}" placeholder="Tìm họ tên, CCCD" aria-label="Tìm kiếm"><select name="status"><option value="">Tất cả trạng thái</option>{% for value in ['CHUA_XU_LY','DANG_SO_HOA','CHO_KIEM_TRA','CAN_BO_SUNG','HOAN_THANH'] %}<option value="{{ value }}" {% if status==value %}selected{% endif %}>{{ value }}</option>{% endfor %}</select><select name="unit"><option value="">Tất cả đơn vị</option>{% for value in units %}<option {% if unit==value %}selected{% endif %}>{{ value }}</option>{% endfor %}</select><label><input type="checkbox" name="warning" value="1" {% if warning %}checked{% endif %}> Có cảnh báo</label><label><input type="checkbox" name="missing_p1" value="1" {% if missing_p1 %}checked{% endif %}> Thiếu ƯT1</label><button class="button" type="submit">Lọc</button></form>
-<div class="table-wrap"><table><thead><tr><th>Họ tên</th><th>CCCD</th><th>Đơn vị</th><th>Tài liệu</th><th>Loại đã có</th><th>Còn thiếu</th><th>Tiến độ</th><th>Trạng thái</th><th>Cảnh báo</th></tr></thead><tbody>{% for row in rows %}<tr><td><a href="/cases/{{ row.id }}">{{ row.person_name_display or row.folder_name }}</a></td><td>{{ row.citizen_id or '—' }}</td><td>{{ row.unit_code or '—' }}</td><td>{{ row.document_count }}</td><td>{{ row.type_count }}</td><td>{{ row.missing_type_count }}</td><td>{{ row.progress_percent }}%</td><td><span class="status">{{ row.effective_status }}</span></td><td>{{ row.warning_count }}</td></tr>{% else %}<tr><td colspan="9" class="empty">Không có hồ sơ phù hợp.</td></tr>{% endfor %}</tbody></table></div>
+<section class="page-head">
+  <div>
+    <p class="eyebrow">DANH SÁCH HỒ SƠ</p>
+    <h1>Hồ sơ Đảng viên</h1>
+    <p class="lead-muted">Tra cứu, theo dõi tiến độ và kiểm tra tài liệu của từng Đảng viên theo đơn vị.</p>
+  </div>
+  <div>
+    <a class="button primary" href="/add-document">
+      <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+      <span>+ Thêm tài liệu mới</span>
+    </a>
+  </div>
+</section>
+
+<form class="filters" method="get" role="search" aria-label="Bộ lọc hồ sơ">
+  <input name="q" value="{{ q }}" placeholder="🔍 Tìm họ tên, CCCD..." aria-label="Tìm kiếm theo họ tên hoặc CCCD" style="min-width: 220px; flex: 1;">
+  
+  <select name="status" aria-label="Lọc theo trạng thái">
+    <option value="">-- Tất cả trạng thái --</option>
+    {% for value in ['CHUA_XU_LY','DANG_SO_HOA','CHO_KIEM_TRA','CAN_BO_SUNG','HOAN_THANH'] %}
+    <option value="{{ value }}" {% if status==value %}selected{% endif %}>{{ value|ui_label }}</option>
+    {% endfor %}
+  </select>
+
+  <select name="unit" aria-label="Lọc theo đơn vị">
+    <option value="">-- Tất cả đơn vị --</option>
+    {% for value in units %}
+    <option value="{{ value }}" {% if unit==value %}selected{% endif %}>{{ value }}</option>
+    {% endfor %}
+  </select>
+
+  <label>
+    <input type="checkbox" name="warning" value="1" {% if warning %}checked{% endif %}>
+    <span>Có cảnh báo</span>
+  </label>
+
+  <label>
+    <input type="checkbox" name="missing_p1" value="1" {% if missing_p1 %}checked{% endif %}>
+    <span>Thiếu ƯT1</span>
+  </label>
+
+  <button class="button primary sm" type="submit">
+    <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <span>Lọc</span>
+  </button>
+
+  {% if q or status or unit or warning or missing_p1 %}
+  <a href="/cases" class="button sm ghost" style="color:var(--red-800);">Xóa bộ lọc</a>
+  {% endif %}
+</form>
+
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th>Họ tên Đảng viên</th>
+        <th>Số CCCD</th>
+        <th>Đơn vị / Chi bộ</th>
+        <th style="text-align:center;">Số tệp</th>
+        <th style="text-align:center;">Đã có</th>
+        <th style="text-align:center;">Còn thiếu</th>
+        <th style="min-width:130px;">Tiến độ</th>
+        <th>Trạng thái</th>
+        <th style="text-align:center;">Cảnh báo</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in rows %}
+      <tr>
+        <td>
+          <a href="/cases/{{ row.id }}" style="font-weight:600;font-size:14px;">
+            {{ row.person_name_display or row.folder_name }}
+          </a>
+        </td>
+        <td class="tabular" style="color:var(--ink-600);">{{ row.citizen_id or '—' }}</td>
+        <td>{{ row.unit_code or '—' }}</td>
+        <td class="tabular" style="text-align:center;">{{ row.document_count }}</td>
+        <td class="tabular" style="text-align:center;color:#1b5e20;font-weight:600;">{{ row.type_count }}</td>
+        <td class="tabular" style="text-align:center;color:{% if row.missing_type_count > 0 %}#b78118{% else %}#1b5e20{% endif %};">{{ row.missing_type_count }}</td>
+        <td>
+          <div class="progress-bar-inline">
+            <div class="progress-track">
+              <div class="progress-fill" style="width: {{ row.progress_percent }}%;"></div>
+            </div>
+            <span class="tabular" style="font-weight:600;min-width:40px;">{{ row.progress_percent }}%</span>
+          </div>
+        </td>
+        <td>
+          <span class="status status-{{ row.effective_status }}">{{ row.effective_status|ui_label }}</span>
+        </td>
+        <td style="text-align:center;">
+          {% if row.warning_count %}
+          <span class="badge-p1 tabular">{{ row.warning_count }}</span>
+          {% else %}
+          <span style="color:var(--ink-400);">0</span>
+          {% endif %}
+        </td>
+      </tr>
+      {% else %}
+      <tr>
+        <td colspan="9" style="text-align:center;padding:48px 24px;">
+          <div class="empty-state" style="margin:0 auto;box-shadow:none;border:none;background:transparent;">
+            <svg viewBox="0 0 24 24" style="width:40px;height:40px;stroke:var(--ink-400);fill:none;stroke-width:1.5;margin-bottom:12px;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <h2>Không tìm thấy hồ sơ phù hợp</h2>
+            <p>Hãy thử thay đổi từ khóa tìm kiếm hoặc bỏ bớt tiêu chí lọc.</p>
+            <a href="/cases" class="button primary sm">Xem tất cả hồ sơ</a>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
 {% endblock %}

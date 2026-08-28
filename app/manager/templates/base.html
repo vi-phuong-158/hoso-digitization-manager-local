@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Hồ sơ Digitization Manager{% endblock %}</title>
+  <link rel="stylesheet" href="/static/manager.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand"><span class="brand-mark">H</span><span>Hồ sơ<br><small>Digitization Manager</small></span></div>
+      <nav aria-label="Điều hướng chính">
+        <a href="/" class="nav-link">Tổng quan</a>
+        <a href="/cases" class="nav-link">Hồ sơ Đảng viên</a>
+        <a href="/add-document" class="nav-link">Thêm tài liệu</a>
+        <a href="/scan" class="nav-link">Scan / AI</a>
+        <a href="/reviews" class="nav-link">Rà soát hồ sơ</a>
+        <a href="/backup" class="nav-link">Sao lưu</a>
+        <a href="/settings" class="nav-link">Cài đặt</a>
+      </nav>
+      <div class="sidebar-foot">Offline · localhost</div>
+    </aside>
+    <main class="main-content">
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+</body>
+</html>

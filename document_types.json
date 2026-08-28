@@ -1,0 +1,960 @@
+{
+  "schema_version": "1.0.0",
+  "source": "Danh mục tài liệu số hóa và quy tắc đặt tên trong các ảnh hướng dẫn do người dùng cung cấp ngày 2026-08-19",
+  "classification_contract": {
+    "allowed_type_ids": [
+      "01",
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07",
+      "08",
+      "09",
+      "10",
+      "11",
+      "12",
+      "13",
+      "14",
+      "15",
+      "16",
+      "17",
+      "18",
+      "19",
+      "20",
+      "21",
+      "22",
+      "23",
+      "24",
+      "25",
+      "26",
+      "27",
+      "28",
+      "29",
+      "30",
+      "31",
+      "32",
+      "33",
+      "34",
+      "35",
+      "36",
+      "37",
+      "38",
+      "39",
+      "40",
+      "41",
+      "42",
+      "43",
+      "44",
+      "45",
+      "46",
+      "47",
+      "48",
+      "49",
+      "50",
+      "51",
+      "52",
+      "53",
+      "54",
+      "55",
+      "56",
+      "57",
+      "58",
+      "59",
+      "60",
+      "61",
+      "62",
+      "63",
+      "64",
+      "65",
+      "66",
+      "67",
+      "68",
+      "69",
+      "70",
+      "71",
+      "72",
+      "73",
+      "74",
+      "75",
+      "76",
+      "77",
+      "78",
+      "79",
+      "80",
+      "81",
+      "82",
+      "83",
+      "84",
+      "85",
+      "86",
+      "87",
+      "88",
+      "89",
+      "90",
+      "91",
+      "92",
+      "93",
+      "94",
+      "95",
+      "96",
+      "97",
+      "98",
+      "99",
+      "100",
+      "101",
+      "102",
+      "103",
+      "104"
+    ],
+    "fallback_type": "UNKNOWN",
+    "rule": "AI chỉ được trả về một type_id trong danh mục hoặc UNKNOWN; không tự tạo loại mới."
+  },
+  "naming_rules": {
+    "document_filename_structure": "[STT].[Ten_tai_lieu].[SoThuTu].pdf",
+    "single_document_of_type": "[STT].[Ten_tai_lieu].pdf",
+    "multiple_documents_same_type": "[STT].[Ten_tai_lieu].[SoThuTu].pdf",
+    "same_type_sequence": "Đánh số 1..n theo thời gian từ cũ đến mới.",
+    "characters": "Không dấu; không dấu cách; không ký tự đặc biệt; dùng dấu gạch dưới.",
+    "note": "filename_base của 01, 02, 55 bám đúng ví dụ nhìn thấy trong hướng dẫn. Các loại còn lại được sinh cơ học từ tên loại; nếu đơn vị có bảng tên file chuẩn riêng thì dùng bảng đó để override."
+  },
+  "folder_naming_rule_from_guidance": {
+    "structure": "[M1].[M2].[M3].[M4].[M5]\\\\[SoCanCuocCongDan]_[HoTenDangVien]",
+    "mvp_behavior": "Trong MVP không tự đổi tên thư mục hồ sơ. Tên thư mục hiện có chỉ được dùng làm ngữ cảnh người sở hữu hồ sơ."
+  },
+  "document_types": [
+    {
+      "id": "01",
+      "stt": 1,
+      "name_vi": "Lý lịch của người xin vào Đảng",
+      "priority": 1,
+      "filename_base": "01.Ly_lich_nguoi_xin_vao_dang",
+      "filename_example_verified_from_guidance": true
+    },
+    {
+      "id": "02",
+      "stt": 2,
+      "name_vi": "Lý lịch đảng viên",
+      "priority": 1,
+      "filename_base": "02.Ly_lich_dang_vien",
+      "filename_example_verified_from_guidance": true
+    },
+    {
+      "id": "03",
+      "stt": 3,
+      "name_vi": "Phiếu đảng viên",
+      "priority": 1,
+      "filename_base": "03.Phieu_dang_vien",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "04",
+      "stt": 4,
+      "name_vi": "Phiếu bổ sung hồ sơ đảng viên",
+      "priority": 1,
+      "filename_base": "04.Phieu_bo_sung_ho_so_dang_vien",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "05",
+      "stt": 5,
+      "name_vi": "Quyết định kết nạp đảng viên",
+      "priority": 1,
+      "filename_base": "05.Quyet_dinh_ket_nap_dang_vien",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "06",
+      "stt": 6,
+      "name_vi": "Quyết định kết nạp lại người vào Đảng (của cấp uỷ có thẩm quyền)",
+      "priority": 1,
+      "filename_base": "06.Quyet_dinh_ket_nap_lai_nguoi_vao_Dang_cua_cap_uy_co_tham_quyen",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "07",
+      "stt": 7,
+      "name_vi": "Quyết định công nhận đảng viên chính thức",
+      "priority": 1,
+      "filename_base": "07.Quyet_dinh_cong_nhan_dang_vien_chinh_thuc",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "08",
+      "stt": 8,
+      "name_vi": "Quyết định của cấp uỷ có thẩm quyền xoá tên đảng viên dự bị",
+      "priority": 1,
+      "filename_base": "08.Quyet_dinh_cua_cap_uy_co_tham_quyen_xoa_ten_dang_vien_du_bi",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "09",
+      "stt": 9,
+      "name_vi": "Quyết định công nhận đảng viên sau khi khắc phục, thực hiện đúng quy định về thẩm quyền, thủ tục kết nạp đảng viên",
+      "priority": 1,
+      "filename_base": "09.Quyet_dinh_cong_nhan_dang_vien_sau_khi_khac_phuc_thuc_hien_dung_quy_dinh_ve_tham_quyen_thu_tuc_ket_nap_dang_vien",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "10",
+      "stt": 10,
+      "name_vi": "Quyết định công nhận đảng viên chính thức sau khi khắc phục, thực hiện đúng quy định về thẩm quyền, thủ tục",
+      "priority": 1,
+      "filename_base": "10.Quyet_dinh_cong_nhan_dang_vien_chinh_thuc_sau_khi_khac_phuc_thuc_hien_dung_quy_dinh_ve_tham_quyen_thu_tuc",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "11",
+      "stt": 11,
+      "name_vi": "Quyết định huỷ quyết định kết nạp đảng viên sai quy định, không đúng tiêu chuẩn, điều kiện",
+      "priority": 1,
+      "filename_base": "11.Quyet_dinh_huy_quyet_dinh_ket_nap_dang_vien_sai_quy_dinh_khong_dung_tieu_chuan_dieu_kien",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "12",
+      "stt": 12,
+      "name_vi": "Quyết định huỷ quyết định kết nạp lại đảng viên sai quy định, không đúng tiêu chuẩn, điều kiện",
+      "priority": 1,
+      "filename_base": "12.Quyet_dinh_huy_quyet_dinh_ket_nap_lai_dang_vien_sai_quy_dinh_khong_dung_tieu_chuan_dieu_kien",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "13",
+      "stt": 13,
+      "name_vi": "Quyết định huỷ quyết định công nhận đảng viên chính thức sai quy định, không đúng tiêu chuẩn, điều kiện",
+      "priority": 1,
+      "filename_base": "13.Quyet_dinh_huy_quyet_dinh_cong_nhan_dang_vien_chinh_thuc_sai_quy_dinh_khong_dung_tieu_chuan_dieu_kien",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "14",
+      "stt": 14,
+      "name_vi": "Quyết định khôi phục quyền của đảng viên",
+      "priority": 1,
+      "filename_base": "14.Quyet_dinh_khoi_phuc_quyen_cua_dang_vien",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "15",
+      "stt": 15,
+      "name_vi": "Quyết định nối lại sinh hoạt đảng của đảng viên",
+      "priority": 1,
+      "filename_base": "15.Quyet_dinh_noi_lai_sinh_hoat_dang_cua_dang_vien",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "16",
+      "stt": 16,
+      "name_vi": "Quyết định xoá tên trong danh sách đảng viên (theo Điều 8 Điều lệ Đảng)",
+      "priority": 1,
+      "filename_base": "16.Quyet_dinh_xoa_ten_trong_danh_sach_dang_vien_theo_Dieu_8_Dieu_le_Dang",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "17",
+      "stt": 17,
+      "name_vi": "Quyết định cho đảng viên ra khỏi Đảng",
+      "priority": 1,
+      "filename_base": "17.Quyet_dinh_cho_dang_vien_ra_khoi_Dang",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "18",
+      "stt": 18,
+      "name_vi": "Giấy xác nhận tuổi Đảng",
+      "priority": 1,
+      "filename_base": "18.Giay_xac_nhan_tuoi_Dang",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "19",
+      "stt": 19,
+      "name_vi": "Quyết định phát thẻ đảng viên cho cá nhân đảng viên",
+      "priority": 1,
+      "filename_base": "19.Quyet_dinh_phat_the_dang_vien_cho_ca_nhan_dang_vien",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "20",
+      "stt": 20,
+      "name_vi": "Quyết định tặng Huy hiệu Đảng đối với cá nhân đảng viên",
+      "priority": 1,
+      "filename_base": "20.Quyet_dinh_tang_Huy_hieu_Dang_doi_voi_ca_nhan_dang_vien",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "21",
+      "stt": 21,
+      "name_vi": "Quyết định truy tặng Huy hiệu Đảng đối với cá nhân đảng viên",
+      "priority": 1,
+      "filename_base": "21.Quyet_dinh_truy_tang_Huy_hieu_Dang_doi_voi_ca_nhan_dang_vien",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "22",
+      "stt": 22,
+      "name_vi": "Quyết định kỷ luật Đảng",
+      "priority": 1,
+      "filename_base": "22.Quyet_dinh_ky_luat_Dang",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "23",
+      "stt": 23,
+      "name_vi": "Quyết định khen thưởng",
+      "priority": 1,
+      "filename_base": "23.Quyet_dinh_khen_thuong",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "24",
+      "stt": 24,
+      "name_vi": "Quyết định đình chỉ sinh hoạt đảng",
+      "priority": 1,
+      "filename_base": "24.Quyet_dinh_dinh_chi_sinh_hoat_dang",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "25",
+      "stt": 25,
+      "name_vi": "Quyết định đình chỉ cấp uỷ",
+      "priority": 1,
+      "filename_base": "25.Quyet_dinh_dinh_chi_cap_uy",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "26",
+      "stt": 26,
+      "name_vi": "Quyết định gia hạn đình chỉ sinh hoạt đảng",
+      "priority": 1,
+      "filename_base": "26.Quyet_dinh_gia_han_dinh_chi_sinh_hoat_dang",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "27",
+      "stt": 27,
+      "name_vi": "Quyết định gia hạn đình chỉ cấp uỷ",
+      "priority": 1,
+      "filename_base": "27.Quyet_dinh_gia_han_dinh_chi_cap_uy",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "28",
+      "stt": 28,
+      "name_vi": "Quyết định giải quyết khiếu nại",
+      "priority": 1,
+      "filename_base": "28.Quyet_dinh_giai_quyet_khieu_nai",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "29",
+      "stt": 29,
+      "name_vi": "Quyết định giải quyết tố cáo",
+      "priority": 1,
+      "filename_base": "29.Quyet_dinh_giai_quyet_to_cao",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "30",
+      "stt": 30,
+      "name_vi": "Quyết định đình chỉ chức vụ trong đảng đối với cá nhân",
+      "priority": 1,
+      "filename_base": "30.Quyet_dinh_dinh_chi_chuc_vu_trong_dang_doi_voi_ca_nhan",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "31",
+      "stt": 31,
+      "name_vi": "Quyết định cho trở lại sinh hoạt cấp uỷ (hoặc sinh hoạt đảng)",
+      "priority": 1,
+      "filename_base": "31.Quyet_dinh_cho_tro_lai_sinh_hoat_cap_uy_hoac_sinh_hoat_dang",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "32",
+      "stt": 32,
+      "name_vi": "Thông báo kết luận giải quyết tố cáo",
+      "priority": 1,
+      "filename_base": "32.Thong_bao_ket_luan_giai_quyet_to_cao",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "33",
+      "stt": 33,
+      "name_vi": "Thông báo về việc không giải quyết khiếu nại kỷ luật đảng",
+      "priority": 1,
+      "filename_base": "33.Thong_bao_ve_viec_khong_giai_quyet_khieu_nai_ky_luat_dang",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "34",
+      "stt": 34,
+      "name_vi": "Kết luận kiểm tra của Ủy ban Kiểm tra/Đoàn kiểm tra khi có dấu hiệu vi phạm",
+      "priority": 1,
+      "filename_base": "34.Ket_luan_kiem_tra_cua_Uy_ban_Kiem_tra_Doan_kiem_tra_khi_co_dau_hieu_vi_pham",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "35",
+      "stt": 35,
+      "name_vi": "Kết luận minh oan/không vi phạm của cơ quan có thẩm quyền",
+      "priority": 1,
+      "filename_base": "35.Ket_luan_minh_oan_khong_vi_pham_cua_co_quan_co_tham_quyen",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "36",
+      "stt": 36,
+      "name_vi": "Quyết định kỷ luật hành chính (khiển trách/cảnh cáo/hạ bậc lương/giáng chức/cách chức/buộc thôi việc)",
+      "priority": 1,
+      "filename_base": "36.Quyet_dinh_ky_luat_hanh_chinh_khien_trach_canh_cao_ha_bac_luong_giang_chuc_cach_chuc_buoc_thoi_viec",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "37",
+      "stt": 37,
+      "name_vi": "Đơn xin vào Đảng",
+      "priority": 2,
+      "filename_base": "37.Don_xin_vao_Dang",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "38",
+      "stt": 38,
+      "name_vi": "Giấy chứng nhận học lớp nhận thức về Đảng",
+      "priority": 2,
+      "filename_base": "38.Giay_chung_nhan_hoc_lop_nhan_thuc_ve_Dang",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "39",
+      "stt": 39,
+      "name_vi": "Giấy giới thiệu người vào Đảng",
+      "priority": 2,
+      "filename_base": "39.Giay_gioi_thieu_nguoi_vao_Dang",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "40",
+      "stt": 40,
+      "name_vi": "Nghị quyết giới thiệu đoàn viên ưu tú vào Đảng",
+      "priority": 2,
+      "filename_base": "40.Nghi_quyet_gioi_thieu_doan_vien_uu_tu_vao_Dang",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "41",
+      "stt": 41,
+      "name_vi": "Nghị quyết giới thiệu đoàn viên công đoàn vào Đảng",
+      "priority": 2,
+      "filename_base": "41.Nghi_quyet_gioi_thieu_doan_vien_cong_doan_vao_Dang",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "42",
+      "stt": 42,
+      "name_vi": "Tổng hợp ý kiến nhận xét của các đoàn thể chính trị - xã hội nơi sinh hoạt và chi uỷ (hoặc chi bộ) nơi cư trú đối với người vào Đảng",
+      "priority": 2,
+      "filename_base": "42.Tong_hop_y_kien_nhan_xet_cua_cac_doan_the_chinh_tri_xa_hoi_noi_sinh_hoat_va_chi_uy_hoac_chi_bo_noi_cu_tru_doi_voi_nguoi_vao_Dang",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "43",
+      "stt": 43,
+      "name_vi": "Nghị quyết đề nghị kết nạp đảng viên của chi bộ",
+      "priority": 2,
+      "filename_base": "43.Nghi_quyet_de_nghi_ket_nap_dang_vien_cua_chi_bo",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "44",
+      "stt": 44,
+      "name_vi": "Báo cáo về việc thẩm định nghị quyết của chi bộ đề nghị kết nạp đảng viên của đảng uỷ bộ phận",
+      "priority": 2,
+      "filename_base": "44.Bao_cao_ve_viec_tham_dinh_nghi_quyet_cua_chi_bo_de_nghi_ket_nap_dang_vien_cua_dang_uy_bo_phan",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "45",
+      "stt": 45,
+      "name_vi": "Nghị quyết đề nghị kết nạp đảng viên của đảng uỷ cơ sở",
+      "priority": 2,
+      "filename_base": "45.Nghi_quyet_de_nghi_ket_nap_dang_vien_cua_dang_uy_co_so",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "46",
+      "stt": 46,
+      "name_vi": "Giấy chứng nhận học lớp đảng viên mới",
+      "priority": 2,
+      "filename_base": "46.Giay_chung_nhan_hoc_lop_dang_vien_moi",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "47",
+      "stt": 47,
+      "name_vi": "Bản tự kiểm điểm của đảng viên dự bị (đề nghị công nhận đảng viên chính thức)",
+      "priority": 2,
+      "filename_base": "47.Ban_tu_kiem_diem_cua_dang_vien_du_bi_de_nghi_cong_nhan_dang_vien_chinh_thuc",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "48",
+      "stt": 48,
+      "name_vi": "Bản nhận xét đảng viên dự bị của đảng viên được phân công giúp đỡ",
+      "priority": 2,
+      "filename_base": "48.Ban_nhan_xet_dang_vien_du_bi_cua_dang_vien_duoc_phan_cong_giup_do",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "49",
+      "stt": 49,
+      "name_vi": "Tổng hợp ý kiến nhận xét của các đoàn thể chính trị - xã hội nơi sinh hoạt và chi uỷ (hoặc chi bộ) nơi cư trú đối với đảng viên dự bị",
+      "priority": 2,
+      "filename_base": "49.Tong_hop_y_kien_nhan_xet_cua_cac_doan_the_chinh_tri_xa_hoi_noi_sinh_hoat_va_chi_uy_hoac_chi_bo_noi_cu_tru_doi_voi_dang_vien_du_bi",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "50",
+      "stt": 50,
+      "name_vi": "Nghị quyết đề nghị công nhận đảng viên chính thức của chi bộ",
+      "priority": 2,
+      "filename_base": "50.Nghi_quyet_de_nghi_cong_nhan_dang_vien_chinh_thuc_cua_chi_bo",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "51",
+      "stt": 51,
+      "name_vi": "Báo cáo về việc thẩm định nghị quyết của chi bộ đề nghị công nhận đảng viên chính thức của đảng uỷ bộ phận",
+      "priority": 2,
+      "filename_base": "51.Bao_cao_ve_viec_tham_dinh_nghi_quyet_cua_chi_bo_de_nghi_cong_nhan_dang_vien_chinh_thuc_cua_dang_uy_bo_phan",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "52",
+      "stt": 52,
+      "name_vi": "Nghị quyết đề nghị công nhận đảng viên chính thức của đảng uỷ cơ sở",
+      "priority": 2,
+      "filename_base": "52.Nghi_quyet_de_nghi_cong_nhan_dang_vien_chinh_thuc_cua_dang_uy_co_so",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "53",
+      "stt": 53,
+      "name_vi": "Giấy chứng nhận người vào Đảng đang trong thời gian được tổ chức đảng giúp đỡ, xem xét kết nạp của cấp uỷ cơ sở",
+      "priority": 2,
+      "filename_base": "53.Giay_chung_nhan_nguoi_vao_Dang_dang_trong_thoi_gian_duoc_to_chuc_dang_giup_do_xem_xet_ket_nap_cua_cap_uy_co_so",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "54",
+      "stt": 54,
+      "name_vi": "Giấy giới thiệu sinh hoạt đảng chính thức",
+      "priority": 2,
+      "filename_base": "54.Giay_gioi_thieu_sinh_hoat_dang_chinh_thuc",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "55",
+      "stt": 55,
+      "name_vi": "Giấy giới thiệu sinh hoạt đảng tạm thời",
+      "priority": 2,
+      "filename_base": "55.Giay_gioi_thieu_sinh_hoat_dang_tam_thoi",
+      "filename_example_verified_from_guidance": true
+    },
+    {
+      "id": "56",
+      "stt": 56,
+      "name_vi": "Giấy giới thiệu sinh hoạt đảng ra ngoài nước",
+      "priority": 2,
+      "filename_base": "56.Giay_gioi_thieu_sinh_hoat_dang_ra_ngoai_nuoc",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "57",
+      "stt": 57,
+      "name_vi": "Phiếu công tác chính thức ngoài nước",
+      "priority": 2,
+      "filename_base": "57.Phieu_cong_tac_chinh_thuc_ngoai_nuoc",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "58",
+      "stt": 58,
+      "name_vi": "Phiếu công tác tạm thời ngoài nước",
+      "priority": 2,
+      "filename_base": "58.Phieu_cong_tac_tam_thoi_ngoai_nuoc",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "59",
+      "stt": 59,
+      "name_vi": "Giấy giới thiệu sinh hoạt đảng nội bộ",
+      "priority": 2,
+      "filename_base": "59.Giay_gioi_thieu_sinh_hoat_dang_noi_bo",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "60",
+      "stt": 60,
+      "name_vi": "Phiếu báo đảng viên chuyển sinh hoạt đảng chính thức",
+      "priority": 2,
+      "filename_base": "60.Phieu_bao_dang_vien_chuyen_sinh_hoat_dang_chinh_thuc",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "61",
+      "stt": 61,
+      "name_vi": "Bản tự kiểm điểm hằng năm (3 năm gần nhất) và khi chuyển sinh hoạt đảng",
+      "priority": 2,
+      "filename_base": "61.Ban_tu_kiem_diem_hang_nam_3_nam_gan_nhat_va_khi_chuyen_sinh_hoat_dang",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "62",
+      "stt": 62,
+      "name_vi": "Bản tự kiểm điểm tại thời điểm chuyển sinh hoạt đảng (có nhận xét của chi bộ)",
+      "priority": 2,
+      "filename_base": "62.Ban_tu_kiem_diem_tai_thoi_diem_chuyen_sinh_hoat_dang_co_nhan_xet_cua_chi_bo",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "63",
+      "stt": 63,
+      "name_vi": "Bản kiểm điểm trong thời gian sinh hoạt đảng ở nước ngoài (có xác nhận cấp uỷ ngoài nước)",
+      "priority": 2,
+      "filename_base": "63.Ban_kiem_diem_trong_thoi_gian_sinh_hoat_dang_o_nuoc_ngoai_co_xac_nhan_cap_uy_ngoai_nuoc",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "64",
+      "stt": 64,
+      "name_vi": "Quyết định biểu dương đảng viên bằng văn bản hoặc ghi trong nghị quyết chi bộ",
+      "priority": 2,
+      "filename_base": "64.Quyet_dinh_bieu_duong_dang_vien_bang_van_ban_hoac_ghi_trong_nghi_quyet_chi_bo",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "65",
+      "stt": 65,
+      "name_vi": "Bản tự kiểm điểm của đảng viên vi phạm trong quá trình xem xét kỷ luật",
+      "priority": 2,
+      "filename_base": "65.Ban_tu_kiem_diem_cua_dang_vien_vi_pham_trong_qua_trinh_xem_xet_ky_luat",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "66",
+      "stt": 66,
+      "name_vi": "Thông báo vi phạm của cơ quan pháp luật/bản sao bản án hình sự gửi cấp uỷ",
+      "priority": 2,
+      "filename_base": "66.Thong_bao_vi_pham_cua_co_quan_phap_luat_ban_sao_ban_an_hinh_su_gui_cap_uy",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "67",
+      "stt": 67,
+      "name_vi": "Quyết định giải quyết khiếu nại về kỷ luật hành chính",
+      "priority": 2,
+      "filename_base": "67.Quyet_dinh_giai_quyet_khieu_nai_ve_ky_luat_hanh_chinh",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "68",
+      "stt": 68,
+      "name_vi": "Bản án hình sự có hiệu lực pháp luật (bản sao có chứng thực)",
+      "priority": 2,
+      "filename_base": "68.Ban_an_hinh_su_co_hieu_luc_phap_luat_ban_sao_co_chung_thuc",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "69",
+      "stt": 69,
+      "name_vi": "Kết luận thanh tra/kiểm toán liên quan đến cá nhân đảng viên",
+      "priority": 2,
+      "filename_base": "69.Ket_luan_thanh_tra_kiem_toan_lien_quan_den_ca_nhan_dang_vien",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "70",
+      "stt": 70,
+      "name_vi": "Bằng/chứng chỉ lý luận chính trị (sơ cấp/trung cấp/cao cấp/cử nhân)",
+      "priority": 2,
+      "filename_base": "70.Bang_chung_chi_ly_luan_chinh_tri_so_cap_trung_cap_cao_cap_cu_nhan",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "71",
+      "stt": 71,
+      "name_vi": "Quyết định cấp lại Huy hiệu Đảng bị mất đối với cá nhân đảng viên",
+      "priority": 2,
+      "filename_base": "71.Quyet_dinh_cap_lai_Huy_hieu_Dang_bi_mat_doi_voi_ca_nhan_dang_vien",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "72",
+      "stt": 72,
+      "name_vi": "Quyết định cấp lại thẻ đảng viên bị mất cho cá nhân đảng viên",
+      "priority": 2,
+      "filename_base": "72.Quyet_dinh_cap_lai_the_dang_vien_bi_mat_cho_ca_nhan_dang_vien",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "73",
+      "stt": 73,
+      "name_vi": "Quyết định đổi lại thẻ đảng viên bị hỏng, bị sai cho cá nhân đảng viên",
+      "priority": 2,
+      "filename_base": "73.Quyet_dinh_doi_lai_the_dang_vien_bi_hong_bi_sai_cho_ca_nhan_dang_vien",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "74",
+      "stt": 74,
+      "name_vi": "Quyết định của Tòa án nhân dân/Trích lục hộ tịch về thay đổi họ tên",
+      "priority": 2,
+      "filename_base": "74.Quyet_dinh_cua_Toa_an_nhan_dan_Trich_luc_ho_tich_ve_thay_doi_ho_ten",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "75",
+      "stt": 75,
+      "name_vi": "Khai sinh gốc/Kết luận đính chính ngày tháng năm sinh của cơ quan có thẩm quyền",
+      "priority": 2,
+      "filename_base": "75.Khai_sinh_goc_Ket_luan_dinh_chinh_ngay_thang_nam_sinh_cua_co_quan_co_tham_quyen",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "76",
+      "stt": 76,
+      "name_vi": "Xác nhận của UBND/cơ quan công an về thay đổi quê quán, nơi cư trú",
+      "priority": 2,
+      "filename_base": "76.Xac_nhan_cua_UBND_co_quan_cong_an_ve_thay_doi_que_quan_noi_cu_tru",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "77",
+      "stt": 77,
+      "name_vi": "Quyết định xác định lại dân tộc của UBND cấp tỉnh",
+      "priority": 2,
+      "filename_base": "77.Quyet_dinh_xac_dinh_lai_dan_toc_cua_UBND_cap_tinh",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "78",
+      "stt": 78,
+      "name_vi": "Kết luận hủy văn bằng/xác định văn bằng không hợp lệ",
+      "priority": 2,
+      "filename_base": "78.Ket_luan_huy_van_bang_xac_dinh_van_bang_khong_hop_le",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "79",
+      "stt": 79,
+      "name_vi": "Đơn xin miễn công tác và sinh hoạt đảng",
+      "priority": 2,
+      "filename_base": "79.Don_xin_mien_cong_tac_va_sinh_hoat_dang",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "80",
+      "stt": 80,
+      "name_vi": "Giấy xác nhận của cơ sở y tế có thẩm quyền (khi miễn vì lý do sức khỏe)",
+      "priority": 2,
+      "filename_base": "80.Giay_xac_nhan_cua_co_so_y_te_co_tham_quyen_khi_mien_vi_ly_do_suc_khoe",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "81",
+      "stt": 81,
+      "name_vi": "Nghị quyết chi bộ về việc cho đảng viên miễn công tác và sinh hoạt đảng",
+      "priority": 2,
+      "filename_base": "81.Nghi_quyet_chi_bo_ve_viec_cho_dang_vien_mien_cong_tac_va_sinh_hoat_dang",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "82",
+      "stt": 82,
+      "name_vi": "Văn bản bổ sung lý lịch sau khi về nước",
+      "priority": 2,
+      "filename_base": "82.Van_ban_bo_sung_ly_lich_sau_khi_ve_nuoc",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "83",
+      "stt": 83,
+      "name_vi": "Giấy chứng tử của đảng viên",
+      "priority": 2,
+      "filename_base": "83.Giay_chung_tu_cua_dang_vien",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "84",
+      "stt": 84,
+      "name_vi": "Bản tường trình về việc mất hồ sơ đảng viên kèm bản kiểm điểm trách nhiệm",
+      "priority": 2,
+      "filename_base": "84.Ban_tuong_trinh_ve_viec_mat_ho_so_dang_vien_kem_ban_kiem_diem_trach_nhiem",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "85",
+      "stt": 85,
+      "name_vi": "Phiếu đảng viên cũ (các phiên bản trước - không hủy, lưu làm lịch sử)",
+      "priority": 2,
+      "filename_base": "85.Phieu_dang_vien_cu_cac_phien_ban_truoc_khong_huy_luu_lam_lich_su",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "86",
+      "stt": 86,
+      "name_vi": "Các văn bằng, chứng chỉ chuyên môn, nghiệp vụ, ngoại ngữ, tin học, bồi dưỡng chức danh, ngạch, chứng chỉ hành nghề (bản sao có chứng thực)",
+      "priority": 3,
+      "filename_base": "86.Cac_van_bang_chung_chi_chuyen_mon_nghiep_vu_ngoai_ngu_tin_hoc_boi_duong_chuc_danh_ngach_chung_chi_hanh_nghe_ban_sao_co_chung_thuc",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "87",
+      "stt": 87,
+      "name_vi": "Các quyết định điều động, bổ nhiệm…",
+      "priority": 3,
+      "filename_base": "87.Cac_quyet_dinh_dieu_dong_bo_nhiem",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "88",
+      "stt": 88,
+      "name_vi": "Quyết định nghỉ hưu",
+      "priority": 3,
+      "filename_base": "88.Quyet_dinh_nghi_huu",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "89",
+      "stt": 89,
+      "name_vi": "Quyết định nghỉ mất sức lao động",
+      "priority": 3,
+      "filename_base": "89.Quyet_dinh_nghi_mat_suc_lao_dong",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "90",
+      "stt": 90,
+      "name_vi": "Quyết định phục viên/ chuyển ngành (lực lượng vũ trang)",
+      "priority": 3,
+      "filename_base": "90.Quyet_dinh_phuc_vien_chuyen_nganh_luc_luong_vu_trang",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "91",
+      "stt": 91,
+      "name_vi": "Quyết định xuất ngũ (lực lượng vũ trang)",
+      "priority": 3,
+      "filename_base": "91.Quyet_dinh_xuat_ngu_luc_luong_vu_trang",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "92",
+      "stt": 92,
+      "name_vi": "Công văn của cấp uỷ cơ sở giới thiệu người vào Đảng đã được chi bộ, đảng uỷ cơ sở làm thủ tục đề nghị kết nạp Đảng",
+      "priority": 3,
+      "filename_base": "92.Cong_van_cua_cap_uy_co_so_gioi_thieu_nguoi_vao_Dang_da_duoc_chi_bo_dang_uy_co_so_lam_thu_tuc_de_nghi_ket_nap_Dang",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "93",
+      "stt": 93,
+      "name_vi": "Công văn của cấp uỷ có thẩm quyền giới thiệu người vào Đảng đã được cấp uỷ cơ sở làm thủ tục đề nghị kết nạp Đảng",
+      "priority": 3,
+      "filename_base": "93.Cong_van_cua_cap_uy_co_tham_quyen_gioi_thieu_nguoi_vao_Dang_da_duoc_cap_uy_co_so_lam_thu_tuc_de_nghi_ket_nap_Dang",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "94",
+      "stt": 94,
+      "name_vi": "Công văn giới thiệu người vào Đảng đã được cấp uỷ có thẩm quyền ra quyết định kết nạp Đảng",
+      "priority": 3,
+      "filename_base": "94.Cong_van_gioi_thieu_nguoi_vao_Dang_da_duoc_cap_uy_co_tham_quyen_ra_quyet_dinh_ket_nap_Dang",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "95",
+      "stt": 95,
+      "name_vi": "Công văn giới thiệu người vào Đảng đã được cấp uỷ có thẩm quyền ra quyết định kết nạp vào Đảng nhưng chuyển ra ngoài đảng bộ cấp xã (tương đương)",
+      "priority": 3,
+      "filename_base": "95.Cong_van_gioi_thieu_nguoi_vao_Dang_da_duoc_cap_uy_co_tham_quyen_ra_quyet_dinh_ket_nap_vao_Dang_nhung_chuyen_ra_ngoai_dang_bo_cap_xa_tuong_duong",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "96",
+      "stt": 96,
+      "name_vi": "Giấy giới thiệu (của đảng uỷ, chi uỷ cơ sở) cử đảng viên hoặc cấp uỷ viên đi thẩm tra lý lịch của người vào Đảng",
+      "priority": 3,
+      "filename_base": "96.Giay_gioi_thieu_cua_dang_uy_chi_uy_co_so_cu_dang_vien_hoac_cap_uy_vien_di_tham_tra_ly_lich_cua_nguoi_vao_Dang",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "97",
+      "stt": 97,
+      "name_vi": "Công văn đề nghị thẩm tra lý lịch của người vào Đảng",
+      "priority": 3,
+      "filename_base": "97.Cong_van_de_nghi_tham_tra_ly_lich_cua_nguoi_vao_Dang",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "98",
+      "stt": 98,
+      "name_vi": "Công văn chỉ đạo việc làm lại, thực hiện đúng các quy định về thẩm quyền, thủ tục xem xét, quyết định kết nạp đảng viên",
+      "priority": 3,
+      "filename_base": "98.Cong_van_chi_dao_viec_lam_lai_thuc_hien_dung_cac_quy_dinh_ve_tham_quyen_thu_tuc_xem_xet_quyet_dinh_ket_nap_dang_vien",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "99",
+      "stt": 99,
+      "name_vi": "Công văn chỉ đạo việc làm lại, thực hiện đúng các quy định về thẩm quyền, thủ tục công nhận đảng viên chính thức",
+      "priority": 3,
+      "filename_base": "99.Cong_van_chi_dao_viec_lam_lai_thuc_hien_dung_cac_quy_dinh_ve_tham_quyen_thu_tuc_cong_nhan_dang_vien_chinh_thuc",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "100",
+      "stt": 100,
+      "name_vi": "Phiếu báo đảng viên được công nhận chính thức",
+      "priority": 3,
+      "filename_base": "100.Phieu_bao_dang_vien_duoc_cong_nhan_chinh_thuc",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "101",
+      "stt": 101,
+      "name_vi": "Phiếu báo đảng viên ra khỏi Đảng",
+      "priority": 3,
+      "filename_base": "101.Phieu_bao_dang_vien_ra_khoi_Dang",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "102",
+      "stt": 102,
+      "name_vi": "Phiếu báo đảng viên từ trần",
+      "priority": 3,
+      "filename_base": "102.Phieu_bao_dang_vien_tu_tran",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "103",
+      "stt": 103,
+      "name_vi": "Tờ khai đề nghị tặng Huy hiệu Đảng",
+      "priority": 3,
+      "filename_base": "103.To_khai_de_nghi_tang_Huy_hieu_Dang",
+      "filename_example_verified_from_guidance": false
+    },
+    {
+      "id": "104",
+      "stt": 104,
+      "name_vi": "Tờ khai đề nghị truy tặng Huy hiệu Đảng",
+      "priority": 3,
+      "filename_base": "104.To_khai_de_nghi_truy_tang_Huy_hieu_Dang",
+      "filename_example_verified_from_guidance": false
+    }
+  ]
+}

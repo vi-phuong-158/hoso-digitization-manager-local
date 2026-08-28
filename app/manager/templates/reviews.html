@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block title %}Rà soát hồ sơ{% endblock %}
+{% block content %}
+<section class="page-head"><div><p class="eyebrow">REVIEW &amp; REPAIR</p><h1>Rà soát hồ sơ</h1><p class="muted">Review chỉ phát hiện và đề xuất. Chỉ các sửa chữa đã duyệt mới có thể tạo revision mới.</p></div></section>
+{% if not state_available %}<section class="panel warning"><strong>Chưa có pipeline state.</strong> Hãy xử lý hồ sơ bằng pipeline trước; Manager không tự suy đoán hoặc tạo state từ file PDF.</section>{% endif %}
+<section class="panel"><table><thead><tr><th>Hồ sơ</th><th>Trạng thái</th><th>Phiên review</th><th></th></tr></thead><tbody>{% for row in rows %}<tr><td>{{ row.person_name_display or row.folder_name }}</td><td>{{ row.effective_status }}</td><td>{{ session_counts.get(row.folder_name, 0) }}</td><td><a class="button" href="/reviews/{{ row.id }}">Rà soát</a></td></tr>{% else %}<tr><td colspan="4">Chưa có hồ sơ.</td></tr>{% endfor %}</tbody></table></section>
+{% endblock %}

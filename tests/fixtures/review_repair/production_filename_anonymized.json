@@ -1,0 +1,17 @@
+{
+  "schema": "review-benchmark.v1",
+  "fixture_id": "production-derived-filename-invariant-v1",
+  "source": "anonymized",
+  "pages": [7, 7],
+  "finding_type": "WRONG_FILENAME",
+  "old_result": {
+    "classification_kind": "TAXONOMY",
+    "classification_status": "REVIEW",
+    "resolution_status": "REVIEW_PENDING",
+    "type_id": "87"
+  },
+  "expected_result": {
+    "naming": "catalog_deterministic"
+  },
+  "decision": "ACCEPT"
+}

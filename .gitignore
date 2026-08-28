@@ -1,0 +1,35 @@
+input/
+output/
+review/
+analysis/
+analysis_blind/
+logs/
+state/*.db
+state/*.db-shm
+state/*.db-wal
+
+# Local runtime and production data: never commit to the public repository.
+data/
+done/
+/Manager/
+tmp/
+build/
+dist/
+*.db
+*.db-shm
+*.db-wal
+
+*.pdf
+
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+venv/
+
+.DS_Store
+Thumbs.db
+
+# Local acceptance candidates; never release artifacts.
+dist/HosoManager-v*/
+dist/installer/

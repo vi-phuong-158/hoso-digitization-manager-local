@@ -1,0 +1,16 @@
+{
+  "data_root": "D:\\\\HoSoSoHoa",
+  "database_path": "./data/app.db",
+  "host": "127.0.0.1",
+  "port": 8765,
+  "open_browser_on_start": true,
+  "ignore_patterns": [
+    "Thumbs.db",
+    ".DS_Store",
+    "~$*"
+  ],
+  "integration": {
+    "manifest_path": null,
+    "ledger_path": null
+  }
+}

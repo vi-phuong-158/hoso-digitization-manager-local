@@ -1,9 +1,209 @@
 {% extends "base.html" %}
-{% block title %}{{ case.person_name_display or case.folder_name }} — Hồ sơ{% endblock %}
+{% block title %}{{ case.person_name_display or case.folder_name }} — Chi tiết hồ sơ{% endblock %}
+
 {% block content %}
-<p><a href="/cases">← Danh sách hồ sơ</a></p><section class="page-head"><div><p class="eyebrow">HỒ SƠ #{{ case.id }}</p><h1>{{ case.person_name_display or case.folder_name }}</h1><p class="muted">M1–M5: {{ case.m1 or '—' }} / {{ case.m2 or '—' }} / {{ case.m3 or '—' }} / {{ case.m4 or '—' }} / {{ case.m5 or '—' }}</p></div><div><span class="status">{{ case.effective_status }}</span> <strong>{{ case.progress_percent }}%</strong></div></section>
-<div class="actions"><a class="button primary" href="/add-document?case_id={{ case.id }}">+ Thêm tài liệu</a><a class="button" href="/scan">Scan / AI</a><a class="button" href="/reviews/{{ case.id }}">Rà soát</a><button class="button" onclick="postAction('/scan/{{ case.id }}')">Quét lại</button><button class="button primary" onclick="postAction('/cases/{{ case.id }}/complete')">Đánh dấu hoàn thành</button><button class="button" onclick="postAction('/cases/{{ case.id }}/reopen')">Mở lại</button><a class="button" href="/open/case/{{ case.id }}">Mở thư mục</a></div>
-<div class="grid-2"><section class="panel"><h2>Checklist 104 loại</h2><table><thead><tr><th>Mã</th><th>Tài liệu</th><th>ƯT</th><th>Trạng thái</th><th>Số file</th></tr></thead><tbody>{% for item in checklist %}<tr><td>{{ item.code }}</td><td>{{ item.name }}</td><td>{{ item.priority }}</td><td>{{ item.status }}</td><td>{{ item.document_count }}</td></tr>{% endfor %}</tbody></table></section><section class="panel"><h2>Files thực tế</h2><ul class="file-list">{% for doc in documents %}<li><a class="button" href="/documents/{{ doc.id }}/view" target="_blank" rel="noopener">Xem</a> <span>{{ doc.filename }}</span><small>{{ doc.page_count or '—' }} trang · {{ doc.parse_status }}</small></li>{% else %}<li>Chưa có file PDF hợp lệ.</li>{% endfor %}</ul></section></div>
-<div class="grid-2"><section class="panel"><h2>Cảnh báo</h2>{% for item in warnings %}<p class="warning"><strong>{{ item.warning_type }}</strong> — {{ item.message }}</p>{% else %}<p>Không có cảnh báo đang hoạt động.</p>{% endfor %}</section><section class="panel"><h2>Lịch sử</h2><ul class="history">{% for item in history[:12] %}<li><small>{{ item.created_at }}</small> {{ item.event_type }} {% if item.detail %}— {{ item.detail }}{% endif %}</li>{% else %}<li>Chưa có lịch sử.</li>{% endfor %}</ul></section></div>
-<script>async function postAction(url){const token=document.cookie.split('csrf_token=')[1]?.split(';')[0]||'';const r=await fetch(url,{method:'POST',headers:{'X-CSRF-Token':token}});if(r.ok) location.reload(); else alert('Không thực hiện được thao tác.');}</script>
+<div style="margin-bottom: 12px;">
+  <a href="/cases" class="button sm ghost" style="color:var(--ivory-100);padding-left:0;">
+    <svg viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+    <span>Quay lại danh sách hồ sơ</span>
+  </a>
+</div>
+
+<section class="page-head">
+  <div>
+    <p class="eyebrow">HỒ SƠ ĐẢNG VIÊN #{{ case.id }}</p>
+    <h1>{{ case.person_name_display or case.folder_name }}</h1>
+    <div class="case-metrics-bar" style="margin-top:10px;margin-bottom:0;">
+      <span class="m-indicator">CCCD: <strong>{{ case.citizen_id or '—' }}</strong></span>
+      <span class="m-indicator">Đơn vị: <strong>{{ case.unit_code or '—' }}</strong></span>
+      <span class="m-indicator">M1–M5: <strong class="tabular">{{ case.m1 or '—' }} / {{ case.m2 or '—' }} / {{ case.m3 or '—' }} / {{ case.m4 or '—' }} / {{ case.m5 or '—' }}</strong></span>
+    </div>
+  </div>
+  <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;">
+    <span class="status status-{{ case.effective_status }}" style="font-size:14px;padding:6px 14px;">
+      {{ case.effective_status }}
+    </span>
+    <div class="progress-bar-inline" style="min-width:160px;">
+      <div class="progress-track" style="height:8px;max-width:none;">
+        <div class="progress-fill" style="width: {{ case.progress_percent }}%;"></div>
+      </div>
+      <span class="tabular" style="font-weight:700;font-size:15px;color:var(--ivory-50);">{{ case.progress_percent }}%</span>
+    </div>
+  </div>
+</section>
+
+<div class="actions">
+  <a class="button primary" href="/add-document?case_id={{ case.id }}">
+    <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+    <span>+ Thêm tài liệu</span>
+  </a>
+  <button class="button" onclick="postAction('/scan/{{ case.id }}')">
+    <svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg>
+    <span>Quét lại</span>
+  </button>
+  <a class="button" href="/reviews/{{ case.id }}">
+    <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+    <span>Rà soát</span>
+  </a>
+  {% if case.effective_status != 'HOAN_THANH' %}
+  <button class="button gold" onclick="postAction('/cases/{{ case.id }}/complete')">
+    <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+    <span>Đánh dấu hoàn thành</span>
+  </button>
+  {% else %}
+  <button class="button" onclick="postAction('/cases/{{ case.id }}/reopen')">
+    <svg viewBox="0 0 24 24"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+    <span>Mở lại hồ sơ</span>
+  </button>
+  {% endif %}
+  <a class="button" href="/open/case/{{ case.id }}">
+    <svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+    <span>Mở thư mục</span>
+  </a>
+</div>
+
+<div class="grid-2">
+  <!-- Checklist 104 types -->
+  <section class="panel">
+    <div class="panel-header">
+      <div>
+        <h2>Checklist 104 loại tài liệu</h2>
+      </div>
+      <input id="filter-checklist" placeholder="Lọc theo tên / mã..." style="font-size:12px;padding:5px 10px;border-radius:6px;border:1px solid var(--border-strong);width:160px;">
+    </div>
+    <div class="checklist-scroll">
+      <table id="checklist-table">
+        <thead>
+          <tr>
+            <th style="width:50px;">Mã</th>
+            <th>Tên tài liệu</th>
+            <th style="width:50px;text-align:center;">ƯT</th>
+            <th>Trạng thái</th>
+            <th style="text-align:center;width:60px;">Số file</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in checklist %}
+          <tr>
+            <td class="tabular" style="font-weight:700;color:var(--red-800);">{{ item.code }}</td>
+            <td style="font-size:13px;">{{ item.name }}</td>
+            <td style="text-align:center;">
+              {% if item.priority == 1 %}
+              <span class="badge-p1">ƯT1</span>
+              {% else %}
+              <span class="badge-p2">ƯT2</span>
+              {% endif %}
+            </td>
+            <td>
+              <span class="status status-{{ item.status }}" style="font-size:11.5px;padding:2px 7px;">
+                {{ item.status }}
+              </span>
+            </td>
+            <td class="tabular" style="text-align:center;font-weight:600;">
+              {% if item.document_count > 0 %}
+              <span style="color:#1b5e20;">{{ item.document_count }}</span>
+              {% else %}
+              <span style="color:var(--ink-400);">0</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Actual Document Files -->
+  <section class="panel">
+    <div class="panel-header">
+      <h2>Tài liệu thực tế trong hồ sơ</h2>
+      <span class="muted" style="font-size:12.5px;">{{ documents|length }} file PDF</span>
+    </div>
+    <ul class="file-list">
+      {% for doc in documents %}
+      <li>
+        <div class="file-info">
+          <span>{{ doc.filename }}</span>
+          <small>{{ doc.page_count or '—' }} trang · Trạng thái: <strong>{{ doc.parse_status }}</strong></small>
+        </div>
+        <a class="button sm primary" href="/documents/{{ doc.id }}/view" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          <span>Xem</span>
+        </a>
+      </li>
+      {% else %}
+      <li style="padding:32px 0;text-align:center;" class="muted">
+        Chưa có file PDF hợp lệ trong thư mục hồ sơ. Nhấn "+ Thêm tài liệu" để tải lên.
+      </li>
+      {% endfor %}
+    </ul>
+  </section>
+</div>
+
+<div class="grid-2">
+  <!-- Warnings Panel -->
+  <section class="panel">
+    <div class="panel-header">
+      <h2>Cảnh báo nghiệp vụ</h2>
+      <span class="badge-p1 tabular">{{ warnings|length }}</span>
+    </div>
+    {% for item in warnings %}
+    <div class="warning">
+      <strong>{{ item.warning_type }}</strong> — {{ item.message }}
+    </div>
+    {% else %}
+    <p style="color:#1b5e20;padding:12px 0;display:flex;align-items:center;gap:6px;">
+      <svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;"><polyline points="20 6 9 17 4 12"/></svg>
+      <span>Không có cảnh báo hoạt động. Hồ sơ chuẩn hóa tốt.</span>
+    </p>
+    {% endfor %}
+  </section>
+
+  <!-- History Panel -->
+  <section class="panel">
+    <div class="panel-header">
+      <h2>Nhật ký số hóa</h2>
+    </div>
+    <ul class="history">
+      {% for item in history[:12] %}
+      <li>
+        <small class="tabular">{{ item.created_at }}</small>
+        <strong>{{ item.event_type }}</strong> {% if item.detail %}— {{ item.detail }}{% endif %}
+      </li>
+      {% else %}
+      <li style="padding:16px 0;" class="muted">Chưa có nhật ký hoạt động.</li>
+      {% endfor %}
+    </ul>
+  </section>
+</div>
+
+<script>
+async function postAction(url) {
+  const token = document.cookie.split('csrf_token=')[1]?.split(';')[0] || '';
+  try {
+    const r = await fetch(url, {
+      method: 'POST',
+      headers: { 'X-CSRF-Token': token }
+    });
+    if (r.ok) {
+      location.reload();
+    } else {
+      const err = await r.json().catch(() => ({ detail: 'Không thực hiện được thao tác.' }));
+      alert(err.detail || 'Không thực hiện được thao tác.');
+    }
+  } catch (e) {
+    alert('Lỗi kết nối khi gửi thao tác.');
+  }
+}
+
+// Interactive filter for checklist table
+document.getElementById('filter-checklist')?.addEventListener('input', function(e) {
+  const q = e.target.value.trim().toLowerCase();
+  const rows = document.querySelectorAll('#checklist-table tbody tr');
+  rows.forEach(r => {
+    const text = r.textContent.toLowerCase();
+    r.style.display = text.includes(q) ? '' : 'none';
+  });
+});
+</script>
 {% endblock %}

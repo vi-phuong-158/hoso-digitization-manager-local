@@ -1,3 +1,60 @@
 {% extends "base.html" %}
-{% block title %}Scan / AI — HosoManager Local{% endblock %}
-{% block content %}<section class="page-head"><div><p class="eyebrow">INTEGRATION</p><h1>Scan / AI</h1><p class="muted">Xử lý AI nằm trong Hoso Digitization Pipeline. HosoManager Local vẫn hoạt động độc lập và chỉ quét metadata từ data root.</p></div></section><section class="panel"><h2>Quét lại kho dữ liệu</h2><p>Quét metadata PDF và cập nhật danh sách hồ sơ; không sửa PDF.</p><button class="button primary" onclick="runScan()">Quét lại dữ liệu</button><p id="scan-result" class="form-message"></p></section><script>async function runScan(){const token=document.cookie.split('csrf_token=')[1]?.split(';')[0]||'';const r=await fetch('/scan',{method:'POST',headers:{'X-CSRF-Token':token}});const d=await r.json();document.getElementById('scan-result').textContent=r.ok?'Đã quét xong '+(d.folders_seen||0)+' hồ sơ.':(d.detail||'Quét thất bại.');}</script>{% endblock %}
+{% block title %}Scan / AI — Hồ sơ Đảng viên{% endblock %}
+
+{% block content %}
+<section class="page-head">
+  <div>
+    <p class="eyebrow">QUÉT VÀ ĐỒNG BỘ DỮ LIỆU</p>
+    <h1>Scan / AI Metadata</h1>
+    <p class="lead-muted">Xử lý phân loại nâng cao nằm trong Hoso Digitization Pipeline. HosoManager Local hoạt động độc lập và quét metadata từ kho dữ liệu cục bộ.</p>
+  </div>
+</section>
+
+<div class="panel" style="max-width: 840px;">
+  <div class="panel-header">
+    <h2>Quét lại kho dữ liệu hồ sơ</h2>
+  </div>
+  <p style="color:var(--ink-800);margin-bottom:18px;">
+    Hệ thống sẽ duyệt qua toàn bộ các thư mục Đảng viên trong kho lưu trữ, kiểm tra file PDF, trích xuất số trang, đối soát danh mục 104 loại và tính toán tiến độ hoàn thành.
+  </p>
+
+  <div style="background:var(--surface-subtle);border:1px solid var(--border-subtle);border-radius:10px;padding:16px 20px;margin-bottom:20px;">
+    <div style="font-size:13px;color:var(--ink-600);margin-bottom:4px;">Thư mục gốc kho tài liệu (Data Root):</div>
+    <div class="path">{{ settings.data_root }}</div>
+  </div>
+
+  <button class="button primary" id="btn-run-scan" onclick="runScan()">
+    <svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg>
+    <span>Bắt đầu quét lại toàn bộ kho</span>
+  </button>
+  
+  <p id="scan-result" class="form-message" style="margin-top:14px;"></p>
+</div>
+
+<script>
+async function runScan() {
+  const btn = document.getElementById('btn-run-scan');
+  const result = document.getElementById('scan-result');
+  btn.disabled = true;
+  result.textContent = 'Đang tiến hành quét thư mục...';
+  
+  const token = document.cookie.split('csrf_token=')[1]?.split(';')[0] || '';
+  try {
+    const r = await fetch('/scan', {
+      method: 'POST',
+      headers: { 'X-CSRF-Token': token }
+    });
+    const d = await r.json();
+    btn.disabled = false;
+    if (r.ok) {
+      result.textContent = `Quét hoàn tất: Đã nhận diện ${d.folders_seen || 0} thư mục hồ sơ (${d.documents_seen || 0} tài liệu).`;
+    } else {
+      result.textContent = d.detail || 'Không thực hiện được quét dữ liệu.';
+    }
+  } catch (e) {
+    btn.disabled = false;
+    result.textContent = 'Lỗi kết nối khi thực hiện quét.';
+  }
+}
+</script>
+{% endblock %}

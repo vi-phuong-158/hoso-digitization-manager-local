@@ -1,3 +1,58 @@
 {% extends "base.html" %}
-{% block title %}Rà soát hồ sơ{% endblock %}
-{% block content %}<section class="page-head"><div><p class="eyebrow">RÀ SOÁT LOCAL</p><h1>Rà soát hồ sơ</h1><p class="muted">Kiểm tra checklist, tài liệu thực tế và cảnh báo metadata. Semantic review thuộc công cụ Pipeline riêng.</p></div></section><section class="panel"><table><thead><tr><th>Hồ sơ</th><th>Trạng thái</th><th>Cảnh báo</th><th></th></tr></thead><tbody>{% for row in rows %}<tr><td>{{ row.person_name_display or row.folder_name }}</td><td>{{ row.effective_status }}</td><td>{{ row.warning_count }}</td><td><a class="button" href="/reviews/{{ row.id }}">Rà soát</a></td></tr>{% else %}<tr><td colspan="4">Chưa có hồ sơ.</td></tr>{% endfor %}</tbody></table></section>{% endblock %}
+{% block title %}Rà soát hồ sơ — Hồ sơ Đảng viên{% endblock %}
+
+{% block content %}
+<section class="page-head">
+  <div>
+    <p class="eyebrow">RÀ SOÁT CỤC BỘ</p>
+    <h1>Rà soát & Đối soát hồ sơ</h1>
+    <p class="lead-muted">Kiểm tra tính đầy đủ của checklist 104 loại, tính toàn vẹn file PDF và cảnh báo metadata trên từng hồ sơ.</p>
+  </div>
+</section>
+
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th>Hồ sơ Đảng viên</th>
+        <th>Trạng thái hiện tại</th>
+        <th style="text-align:center;">Cảnh báo hoạt động</th>
+        <th style="text-align:right;padding-right:24px;">Thao tác</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in rows %}
+      <tr>
+        <td>
+          <a href="/reviews/{{ row.id }}" style="font-weight:600;font-size:14px;">
+            {{ row.person_name_display or row.folder_name }}
+          </a>
+        </td>
+        <td>
+          <span class="status status-{{ row.effective_status }}">{{ row.effective_status }}</span>
+        </td>
+        <td style="text-align:center;">
+          {% if row.warning_count %}
+          <span class="badge-p1 tabular">{{ row.warning_count }}</span>
+          {% else %}
+          <span style="color:var(--ink-400);">0</span>
+          {% endif %}
+        </td>
+        <td style="text-align:right;padding-right:24px;">
+          <a class="button sm primary" href="/reviews/{{ row.id }}">
+            <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+            <span>Rà soát chi tiết</span>
+          </a>
+        </td>
+      </tr>
+      {% else %}
+      <tr>
+        <td colspan="4" style="text-align:center;padding:48px 24px;" class="muted">
+          Chưa có hồ sơ Đảng viên trong hệ thống.
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

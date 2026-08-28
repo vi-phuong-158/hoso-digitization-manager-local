@@ -1,9 +1,195 @@
 {% extends "base.html" %}
-{% block title %}Hồ sơ Digitization Manager — Tổng quan{% endblock %}
+{% block title %}Tổng quan — Hồ sơ Đảng viên{% endblock %}
+
 {% block content %}
-<section class="page-head"><div><p class="eyebrow">TỔNG QUAN</p><h1>Hồ sơ số hóa</h1><p class="muted">Theo dõi tiến độ từ thư mục nguồn, không thay đổi PDF.</p></div><button class="button primary" onclick="postScan()">Quét lại dữ liệu</button></section>
-<div class="cards"><div class="card"><small>Tổng hồ sơ</small><strong>{{ total }}</strong></div><div class="card"><small>Chưa xử lý</small><strong>{{ counts.CHUA_XU_LY }}</strong></div><div class="card"><small>Đang số hóa</small><strong>{{ counts.DANG_SO_HOA }}</strong></div><div class="card"><small>Chờ kiểm tra</small><strong>{{ counts.CHO_KIEM_TRA }}</strong></div><div class="card"><small>Cần bổ sung</small><strong>{{ counts.CAN_BO_SUNG }}</strong></div><div class="card"><small>Hoàn thành</small><strong>{{ counts.HOAN_THANH }}</strong></div><div class="card danger"><small>Thiếu ƯT1</small><strong>{{ missing_p1 }}</strong></div><div class="card"><small>Tiến độ tổng</small><strong>{{ progress }}%</strong></div></div>
-<div class="grid-2"><section class="panel"><h2>Tiến độ theo đơn vị</h2><table><thead><tr><th>Đơn vị</th><th>Hồ sơ</th><th>Tiến độ</th></tr></thead><tbody>{% for row in unit_rows %}<tr><td>{{ row.unit }}</td><td>{{ row.count }}</td><td>{{ row.progress }}%</td></tr>{% else %}<tr><td colspan="3">Chưa có dữ liệu. Hãy quét thư mục.</td></tr>{% endfor %}</tbody></table></section><section class="panel"><h2>Hồ sơ cần hành động</h2><ul class="action-list">{% for row in action_rows %}<li><a href="/cases/{{ row.id }}">{{ row.person_name_display or row.folder_name }}</a><span>{{ row.effective_status }} · {{ row.warning_count }} cảnh báo</span></li>{% else %}<li>Chưa có hồ sơ cần hành động.</li>{% endfor %}</ul></section></div>
-<p class="muted scan-meta">Lần quét gần nhất: {{ last_run.ended_at if last_run else 'Chưa quét' }}</p>
-<script>async function postScan(){const token=document.cookie.split('csrf_token=')[1]?.split(';')[0]||'';const response=await fetch('/scan',{method:'POST',headers:{'X-CSRF-Token':token}});if(response.ok)location.reload();else alert('Quét thất bại.');}</script>
+<section class="page-head">
+  <div>
+    <p class="eyebrow">TỔNG QUAN HỆ THỐNG</p>
+    <h1>Hồ sơ số hóa</h1>
+    <p class="lead-muted">Theo dõi tiến độ từ thư mục nguồn, đảm bảo tính bất biến của tài liệu gốc.</p>
+  </div>
+  <div>
+    <button class="button primary" onclick="postScan()" id="btn-scan">
+      <svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg>
+      <span>Quét lại dữ liệu</span>
+    </button>
+  </div>
+</section>
+
+<div class="dashboard-grid">
+  <!-- Hero Progress Card -->
+  <article class="metric-hero">
+    <div class="metric-hero-top">
+      <div>
+        <span class="metric-hero-label">Tiến độ số hóa tổng thể</span>
+        <div class="metric-hero-number">{{ progress }}%</div>
+        <div class="metric-hero-desc">Tỷ lệ hoàn thiện tài liệu trên toàn bộ kho lưu trữ</div>
+      </div>
+      <div class="brand-emblem" style="width:48px;height:48px;" aria-hidden="true">
+        <svg viewBox="0 0 24 24" style="width:28px;height:28px;"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg>
+      </div>
+    </div>
+    <div>
+      <div class="progress-track-lg">
+        <div class="progress-fill-lg" style="width: {{ progress }}%;"></div>
+      </div>
+      <div class="metric-hero-foot">
+        <span>Tổng số: <strong class="tabular">{{ total }}</strong> hồ sơ</span>
+        <span>Hoàn thành: <strong class="tabular" style="color:var(--status-complete-text);">{{ counts.HOAN_THANH }}</strong></span>
+      </div>
+    </div>
+  </article>
+
+  <!-- Priority 1 Alert Card -->
+  <article class="metric-card-alert">
+    <div>
+      <span class="metric-label">
+        <svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span>Thiếu tài liệu ƯT1</span>
+      </span>
+      <div class="metric-val">{{ missing_p1 }}</div>
+    </div>
+    <div class="metric-foot">Tài liệu bắt buộc nhóm Ưu tiên 1 cần bổ sung</div>
+  </article>
+
+  <!-- Metric Tile: Hoàn thành -->
+  <article class="metric-tile">
+    <div>
+      <span class="metric-label">
+        <span class="status-dot" style="background:#1b5e20;"></span>
+        <span>Hoàn thành</span>
+      </span>
+      <div class="metric-val" style="color:#1b5e20;">{{ counts.HOAN_THANH }}</div>
+    </div>
+    <div class="metric-foot">Đã đủ hồ sơ & xác nhận</div>
+  </article>
+
+  <!-- Metric Tile: Chờ kiểm tra -->
+  <article class="metric-tile">
+    <div>
+      <span class="metric-label">
+        <span class="status-dot" style="background:#b78118;"></span>
+        <span>Chờ kiểm tra</span>
+      </span>
+      <div class="metric-val">{{ counts.CHO_KIEM_TRA }}</div>
+    </div>
+    <div class="metric-foot">Cần đối soát rà soát</div>
+  </article>
+
+  <!-- Metric Tile: Cần bổ sung -->
+  <article class="metric-tile">
+    <div>
+      <span class="metric-label">
+        <span class="status-dot" style="background:#d97706;"></span>
+        <span>Cần bổ sung</span>
+      </span>
+      <div class="metric-val" style="color:#d97706;">{{ counts.CAN_BO_SUNG }}</div>
+    </div>
+    <div class="metric-foot">Còn thiếu tài liệu nghiệp vụ</div>
+  </article>
+
+  <!-- Metric Tile: Đang số hóa & Chưa xử lý -->
+  <article class="metric-tile">
+    <div>
+      <span class="metric-label">
+        <span class="status-dot" style="background:#8c1119;"></span>
+        <span>Đang số hóa / Chưa xử lý</span>
+      </span>
+      <div class="metric-val">{{ counts.DANG_SO_HOA + counts.CHUA_XU_LY }}</div>
+    </div>
+    <div class="metric-foot">{{ counts.DANG_SO_HOA }} đang xử lý · {{ counts.CHUA_XU_LY }} chưa xử lý</div>
+  </article>
+</div>
+
+<div class="grid-2">
+  <!-- Unit Progress Section -->
+  <section class="panel">
+    <div class="panel-header">
+      <h2>Tiến độ theo chi bộ / đơn vị</h2>
+      <span class="muted" style="font-size:12.5px;">{{ unit_rows|length }} đơn vị</span>
+    </div>
+    <div class="table-wrap" style="box-shadow:none;border-radius:var(--radius-card);">
+      <table>
+        <thead>
+          <tr>
+            <th>Đơn vị</th>
+            <th>Số hồ sơ</th>
+            <th>Tiến độ</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in unit_rows %}
+          <tr>
+            <td><strong>{{ row.unit }}</strong></td>
+            <td class="tabular">{{ row.count }}</td>
+            <td>
+              <div class="progress-bar-inline">
+                <div class="progress-track">
+                  <div class="progress-fill" style="width: {{ row.progress }}%;"></div>
+                </div>
+                <span class="tabular" style="font-weight:600;min-width:44px;">{{ row.progress }}%</span>
+              </div>
+            </td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="3" class="muted" style="text-align:center;padding:32px;">Chưa có dữ liệu. Hãy nhấn "Quét lại dữ liệu" để nạp hồ sơ.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Action Queue Section -->
+  <section class="panel">
+    <div class="panel-header">
+      <h2>Hồ sơ cần hành động</h2>
+      <a href="/cases?warning=1" class="button sm ghost" style="color:var(--red-800);font-weight:600;">Xem tất cả</a>
+    </div>
+    <ul class="action-list">
+      {% for row in action_rows %}
+      <li>
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <a href="/cases/{{ row.id }}">{{ row.person_name_display or row.folder_name }}</a>
+          <span class="status status-{{ row.effective_status }}">{{ row.effective_status }}</span>
+        </div>
+        <span>{% if row.warning_count %}<strong style="color:var(--red-700);">{{ row.warning_count }} cảnh báo</strong> · {% endif %}{{ row.unit_code or 'Chưa phân đơn vị' }}</span>
+      </li>
+      {% else %}
+      <li style="padding:28px 0;text-align:center;" class="muted">
+        Không có hồ sơ nào cần xử lý khẩn cấp.
+      </li>
+      {% endfor %}
+    </ul>
+  </section>
+</div>
+
+<div class="scan-meta-bar">
+  <span><strong>Trạng thái kho tài liệu:</strong> Sẵn sàng · Hoạt động cục bộ</span>
+  <span>Lần quét gần nhất: <strong class="tabular">{{ last_run.ended_at if last_run else 'Chưa quét' }}</strong></span>
+</div>
+
+<script>
+async function postScan() {
+  const btn = document.getElementById('btn-scan');
+  if (btn) btn.disabled = true;
+  const token = document.cookie.split('csrf_token=')[1]?.split(';')[0] || '';
+  try {
+    const response = await fetch('/scan', {
+      method: 'POST',
+      headers: { 'X-CSRF-Token': token }
+    });
+    if (response.ok) {
+      location.reload();
+    } else {
+      alert('Không thực hiện được quét dữ liệu.');
+      if (btn) btn.disabled = false;
+    }
+  } catch (err) {
+    alert('Lỗi kết nối khi quét.');
+    if (btn) btn.disabled = false;
+  }
+}
+</script>
 {% endblock %}

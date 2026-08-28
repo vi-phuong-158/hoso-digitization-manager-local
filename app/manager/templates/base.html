@@ -4,7 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}Hồ sơ Số — Quản lý số hóa Đảng vụ{% endblock %}</title>
-  <link rel="icon" href="data:image/svg+xml,%3Csvg viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%238c1119'/%3E%3Cpolygon points='16,6 18.8,12.5 25.8,13.1 20.5,17.7 22.1,24.6 16,21 9.9,24.6 11.5,17.7 6.2,13.1 13.2,12.5' fill='%23e8b83e'/%3E%3C/svg%3E">
+  <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/static/brand/party-emblem-32.png">
+  <link rel="apple-touch-icon" sizes="128x128" href="/static/brand/party-emblem-128.png">
   <link rel="stylesheet" href="/static/manager.css">
 </head>
 <body>
@@ -12,9 +14,7 @@
     <header class="floating-header">
       <a href="/" class="brand" aria-label="Trang chủ Hồ sơ Đảng viên">
         <div class="brand-emblem" aria-hidden="true">
-          <svg viewBox="0 0 24 24">
-            <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" />
-          </svg>
+          <img src="/static/brand/party-emblem.png" alt="" width="32" height="32">
         </div>
         <div class="brand-titles">
           <span class="brand-title">HỒ SƠ ĐẢNG VIÊN</span>
@@ -70,9 +70,14 @@
     <!-- Mobile Slide-out Drawer Panel -->
     <aside class="mobile-drawer" id="mobile-nav-drawer" aria-hidden="true" role="dialog" aria-label="Menu điều hướng">
       <div class="mobile-drawer-head">
-        <div class="brand-titles">
-          <span class="brand-title">HỒ SƠ ĐẢNG VIÊN</span>
-          <span class="brand-subtitle">Quản lý số hóa nội bộ</span>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div class="brand-emblem" style="width:38px;height:38px;border-radius:11px;" aria-hidden="true">
+            <img src="/static/brand/party-emblem-64.png" alt="" width="26" height="26">
+          </div>
+          <div class="brand-titles">
+            <span class="brand-title">HỒ SƠ ĐẢNG VIÊN</span>
+            <span class="brand-subtitle">Quản lý số hóa nội bộ</span>
+          </div>
         </div>
         <button class="mobile-drawer-close" id="drawer-close" aria-label="Đóng menu điều hướng">
           <svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>

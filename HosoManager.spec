@@ -27,5 +27,18 @@ a = Analysis(
     noarchive=False,
 )
 pyz = PYZ(a.pure)
-exe = EXE(pyz, a.scripts, [], exclude_binaries=True, name=BUNDLE_NAME, debug=False, bootloader_ignore_signals=False, strip=False, upx=True, console=True)
+icon_path = ROOT / "app" / "manager" / "static" / "favicon.ico"
+exe = EXE(
+    pyz,
+    a.scripts,
+    [],
+    exclude_binaries=True,
+    name=BUNDLE_NAME,
+    debug=False,
+    bootloader_ignore_signals=False,
+    strip=False,
+    upx=True,
+    console=True,
+    icon=str(icon_path) if icon_path.is_file() else None,
+)
 coll = COLLECT(exe, a.binaries, a.datas, strip=False, upx=True, name=BUNDLE_NAME)

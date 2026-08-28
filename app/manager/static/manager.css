@@ -43,43 +43,47 @@
    2. DESIGN TOKENS
    -------------------------------------------------------------------------- */
 :root {
-  /* Party Crimson Hierarchy */
-  --red-950: #340509;
-  --red-900: #4a070d;
-  --red-850: #5b0910;
-  --red-800: #700c13;
-  --red-700: #8c1119;
-  --red-600: #a71922;
+  /* Official Brand Colors */
+  --party-red: #DA251D;
+  --party-yellow: #FFF200;
 
-  /* Party Gold Accents */
-  --gold-700: #b78118;
-  --gold-600: #d39d27;
-  --gold-500: #e8b83e;
-  --gold-400: #f1c95e;
-  --gold-300: #f7dda0;
-  --gold-200: #faebd0;
+  /* Party Crimson Hierarchy (Deep Atmosphere) */
+  --red-950: #350507;
+  --red-900: #47070B;
+  --red-850: #59090E;
+  --red-800: #6C0B11;
+  --red-700: #841018;
+  --red-600: #A01820;
 
-  /* Warm Neutrals & Working Surfaces */
-  --ivory-50: #fffdf7;
-  --ivory-100: #fff9ea;
-  --ivory-200: #f8edcf;
-  --ivory-300: #eedeb4;
+  /* UI Gold System (Distinct from Bright Party Yellow) */
+  --gold-700: #B77A16;
+  --gold-600: #D39A27;
+  --gold-500: #E8B640;
+  --gold-400: #F3CB68;
+  --gold-300: #F9E1A1;
+  --gold-200: #FAEBCE;
+
+  /* Warm Working Surfaces */
+  --ivory-50: #FFFDF8;
+  --ivory-100: #FFF8EA;
+  --ivory-200: #F6EACD;
+  --ivory-300: #EEDEB4;
 
   /* Ink Hierarchy for High Readability */
-  --ink-950: #241a18;
-  --ink-850: #352623;
-  --ink-800: #443330;
-  --ink-600: #705c57;
-  --ink-400: #9e8984;
+  --ink-950: #261816;
+  --ink-850: #362522;
+  --ink-800: #493632;
+  --ink-600: #725D57;
+  --ink-400: #9E8984;
 
   /* Surface & Border System */
-  --surface-panel: rgba(255, 253, 247, 0.94);
+  --surface-panel: rgba(255, 253, 248, 0.95);
   --surface-card: #ffffff;
   --surface-subtle: #fcf9f2;
   --surface-muted: #f4efe4;
-  --border-subtle: rgba(112, 92, 87, 0.15);
-  --border-strong: rgba(112, 92, 87, 0.28);
-  --border-gold: rgba(232, 184, 62, 0.35);
+  --border-subtle: rgba(114, 93, 87, 0.15);
+  --border-strong: rgba(114, 93, 87, 0.28);
+  --border-gold: rgba(243, 203, 104, 0.32);
 
   /* Status Tokens */
   --status-complete-bg: #edf7ee;
@@ -110,10 +114,10 @@
   --radius-chip: 8px;
 
   /* Shadows */
-  --shadow-tinted: 0 16px 38px rgba(52, 5, 9, 0.16);
-  --shadow-card: 0 4px 16px rgba(52, 5, 9, 0.06);
-  --shadow-glass: inset 0 1px 0 rgba(255, 255, 255, 0.8), 0 20px 48px rgba(36, 5, 8, 0.22);
-  --shadow-header: inset 0 1px 0 rgba(255, 255, 255, 0.16), 0 16px 40px rgba(20, 2, 4, 0.38);
+  --shadow-tinted: 0 16px 38px rgba(53, 5, 7, 0.16);
+  --shadow-card: 0 4px 16px rgba(53, 5, 7, 0.06);
+  --shadow-glass: inset 0 1px 0 rgba(255, 255, 255, 0.8), 0 20px 48px rgba(38, 5, 8, 0.22);
+  --shadow-header: inset 0 1px 0 rgba(255, 255, 255, 0.18), 0 16px 40px rgba(20, 2, 4, 0.38);
 
   /* Motion */
   --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
@@ -148,10 +152,10 @@ body {
   min-height: 100vh;
   background-color: var(--red-950);
   background-image:
-    radial-gradient(ellipse 90% 55% at 8% 0%, rgba(241, 201, 94, 0.14), transparent 50%),
-    radial-gradient(ellipse 80% 50% at 92% 8%, rgba(255, 255, 255, 0.06), transparent 45%),
+    radial-gradient(circle at 10% 5%, rgba(218, 37, 29, 0.20), transparent 28%),
+    radial-gradient(circle at 88% 12%, rgba(243, 203, 104, 0.09), transparent 25%),
     radial-gradient(circle at 50% 100%, rgba(20, 2, 4, 0.75), transparent 65%),
-    linear-gradient(145deg, #360509 0%, #58080f 38%, #720c15 65%, #3d050a 100%);
+    linear-gradient(135deg, #350507 0%, #59090E 42%, #6C0B11 72%, #43070B 100%);
   background-attachment: fixed;
   color: var(--ink-950);
   display: flex;
@@ -195,7 +199,7 @@ body::before {
   background: linear-gradient(135deg, rgba(65, 7, 12, 0.88), rgba(45, 5, 8, 0.92));
   backdrop-filter: blur(20px) saturate(140%);
   -webkit-backdrop-filter: blur(20px) saturate(140%);
-  border: 1px solid rgba(241, 201, 94, 0.24);
+  border: 1px solid rgba(243, 203, 104, 0.24);
   border-radius: var(--radius-panel);
   box-shadow: var(--shadow-header);
   display: flex;
@@ -214,21 +218,41 @@ body::before {
 }
 
 .brand-emblem {
-  width: 38px;
-  height: 38px;
-  border-radius: 10px;
-  background: linear-gradient(135deg, #b78118 0%, #e8b83e 50%, #f7dda0 100%);
-  color: var(--red-950);
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.12),
+    rgba(255, 255, 255, 0.04)
+  );
+  border: 1px solid rgba(243, 203, 104, 0.28);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    0 6px 20px rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   display: grid;
   place-items: center;
-  box-shadow: 0 4px 12px rgba(232, 184, 62, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.5);
   flex-shrink: 0;
+  transition: transform var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
 }
 
-.brand-emblem svg {
-  width: 22px;
-  height: 22px;
-  fill: currentColor;
+.brand:hover .brand-emblem {
+  transform: scale(1.04);
+  border-color: rgba(243, 203, 104, 0.45);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+    0 8px 24px rgba(218, 37, 29, 0.28);
+}
+
+.brand-emblem img {
+  width: 32px;
+  height: 32px;
+  max-width: 32px;
+  max-height: 32px;
+  object-fit: contain;
+  display: block;
 }
 
 .brand-titles {
@@ -1497,6 +1521,17 @@ textarea:focus-visible {
     padding: 8px 12px;
     margin-bottom: 16px;
     width: 100%;
+  }
+  .brand-emblem {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+  }
+  .brand-emblem img {
+    width: 27px;
+    height: 27px;
+    max-width: 27px;
+    max-height: 27px;
   }
   .brand-title {
     font-size: 13px;

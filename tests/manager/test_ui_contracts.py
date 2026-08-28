@@ -187,3 +187,21 @@ def test_checklist_status_css_tokens_exist():
 
     for cls in required_classes:
         assert cls in css_text, f"Required status class {cls} missing from manager.css"
+
+
+def test_party_brand_emblem_assets_and_contracts(tmp_path: Path):
+    client, _ = _setup_app_client(tmp_path)
+    
+    # Static files serve 200
+    for path in ("/static/brand/party-emblem.png", "/static/brand/party-emblem-64.png", "/static/brand/party-emblem-32.png", "/static/favicon.ico"):
+        resp = client.get(path)
+        assert resp.status_code == 200, f"Asset {path} failed with {resp.status_code}"
+        assert len(resp.content) > 100
+
+    # Rendered header contains party emblem image
+    html = client.get("/").text
+    assert '<img src="/static/brand/party-emblem.png"' in html
+    assert 'class="brand-emblem"' in html
+    
+    # Old SVG star brand emblem is removed from header
+    assert 'class="brand-emblem" aria-hidden="true">\n          <svg' not in html

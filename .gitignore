@@ -24,6 +24,10 @@
 *.tif
 *.tiff
 *.webp
+!/app/manager/static/brand/*
+!/app/manager/static/favicon.ico
+/logo đảng cộng sản việt nam vector/
+/evidence_artifacts/
 config.json
 manager-config.json
 HosoManager.lock

@@ -1515,12 +1515,14 @@ textarea:focus-visible {
   .app-shell {
     padding: 10px 12px 32px;
     width: 100%;
-    max-width: 100vw;
+    max-width: 100%;
+    overflow-x: hidden;
   }
   .floating-header {
     padding: 8px 12px;
     margin-bottom: 16px;
     width: 100%;
+    box-sizing: border-box;
   }
   .brand-emblem {
     width: 40px;
@@ -1548,6 +1550,11 @@ textarea:focus-visible {
   .metric-hero-foot {
     flex-wrap: wrap;
     gap: 8px;
+  }
+  .scan-meta-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
   }
   .dashboard-grid {
     grid-template-columns: 1fr;

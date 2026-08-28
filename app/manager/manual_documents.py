@@ -13,8 +13,8 @@ import fitz
 from PIL import Image, ImageOps
 from pypdf import PdfReader, PdfWriter
 
-from app.naming import auto_filename
-from app.pdf_inventory import sha256_file
+from app.manager_core.naming import auto_filename
+from app.manager_core.hashing import sha256_file
 from .db import Database
 from .taxonomy import TaxonomyAdapter
 

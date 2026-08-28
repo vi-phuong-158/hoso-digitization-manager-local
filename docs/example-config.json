@@ -1,0 +1,7 @@
+{
+  "data_root": "done/output",
+  "database_path": "data/manager.db",
+  "host": "127.0.0.1",
+  "port": 8765,
+  "open_browser_on_start": true
+}

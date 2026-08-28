@@ -1,12 +1,10 @@
 pypdf>=5.0
-pytest>=8.0
-
-# Chỉ cần khi chạy provider gemini thật (runtime):
-# google-genai>=1.0
-
-# Hồ sơ Digitization Manager (offline local UI)
+pymupdf>=1.24
+pillow>=10.0
 fastapi>=0.115
 httpx>=0.28
 jinja2>=3.1
+python-multipart>=0.0.9
 uvicorn>=0.30
 pyinstaller>=6.0
+pytest>=8.0

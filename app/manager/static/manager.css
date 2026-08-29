@@ -525,6 +525,22 @@ body::before {
   gap: 24px;
 }
 
+.site-footer {
+  flex-shrink: 0;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  margin-top: 28px;
+  padding: 14px 8px 0;
+  border-top: 1px solid rgba(241, 201, 94, 0.2);
+  color: var(--gold-300);
+  font-size: 11.5px;
+  line-height: 1.5;
+  letter-spacing: 0.01em;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
 /* --------------------------------------------------------------------------
    5. TYPOGRAPHY & HEADINGS
    -------------------------------------------------------------------------- */
@@ -570,6 +586,17 @@ h1 {
   line-height: 1.18;
   margin-bottom: 6px;
   text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.organization-line {
+  max-width: 100%;
+  margin: -1px 0 8px;
+  color: var(--gold-400);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
 }
 
 h2 {
@@ -1657,6 +1684,10 @@ textarea:focus-visible {
   .brand-subtitle {
     font-size: 10px;
   }
+  .organization-line {
+    font-size: 11px;
+    letter-spacing: 0.05em;
+  }
   .page-head {
     flex-direction: column;
     align-items: flex-start;
@@ -1687,6 +1718,12 @@ textarea:focus-visible {
   }
   .page-grid {
     grid-template-columns: repeat(2, minmax(130px, 1fr));
+  }
+  .site-footer {
+    margin-top: 22px;
+    padding-right: 4px;
+    padding-left: 4px;
+    font-size: 11px;
   }
   h1 {
     font-size: 22px;

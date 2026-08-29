@@ -1,0 +1,21 @@
+{
+  "product": "Hồ sơ Digitization Manager",
+  "version": "0.2.1-rc1",
+  "accepted_source_commit": "c63cabfa28020026b422832ca760f5db1515ce29",
+  "accepted_source_branch": "fix/release-hardening-round1",
+  "windows_version": "Windows 11 build 26200",
+  "python_version": "Python 3.12.13",
+  "pyinstaller_version": "6.22.2",
+  "automated_tests": "82 passed, 1 warning",
+  "compileall": "PASS",
+  "build_result": "PASS",
+  "exe_filename": "HosoManager-v0.2.1-rc1.exe",
+  "exe_relative_path": "dist/HosoManager-v0.2.1-rc1/HosoManager-v0.2.1-rc1.exe",
+  "exe_size_bytes": 17676306,
+  "exe_sha256": "50227bd274e131165ecdc1568e36cd209261c2d8b7c5e87912b692a7cec5e772",
+  "acceptance_verdict": "WINDOWS_RC_ACCEPTANCE_PASS",
+  "acceptance_date": "2026-08-29",
+  "installer": "NOT_TESTED / NOT_APPLICABLE",
+  "installer_acceptance": "PENDING",
+  "source_integrity": "PASS"
+}

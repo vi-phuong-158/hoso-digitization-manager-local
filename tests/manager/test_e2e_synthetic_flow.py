@@ -110,7 +110,10 @@ def test_full_user_flow_synthetic_e2e(tmp_path: Path):
     assert view_resp.headers["content-disposition"] == "inline"
 
     # 7. Backup & Settings
-    backup_resp = client.get("/backup/metadata")
+    # Backup is a state-changing action (it writes a new file to disk), so it
+    # must go through POST + CSRF like every other mutating route - a plain
+    # GET must never have that side effect.
+    backup_resp = client.post("/backup", headers={"X-CSRF-Token": token})
     assert backup_resp.status_code == 200
     assert Path(backup_resp.json()["path"]).is_file()
 

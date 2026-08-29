@@ -74,7 +74,7 @@
   --ink-850: #362522;
   --ink-800: #493632;
   --ink-600: #725D57;
-  --ink-400: #9E8984;
+  --ink-400: #7D6862;
 
   /* Surface & Border System */
   --surface-panel: rgba(255, 253, 248, 0.95);
@@ -606,8 +606,6 @@ h2 {
   border-radius: var(--radius-panel);
   padding: 24px 28px;
   box-shadow: var(--shadow-glass);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
   position: relative;
 }
 
@@ -921,8 +919,8 @@ h2 {
 .filters select,
 .wide-input,
 .wide-select,
-.step input[type=text],
-.step textarea {
+.step-card input[type=text],
+.step-card textarea {
   font-family: inherit;
   font-size: 13.5px;
   border: 1px solid var(--border-strong);
@@ -937,8 +935,8 @@ h2 {
 .filters select:focus,
 .wide-input:focus,
 .wide-select:focus,
-.step input[type=text]:focus,
-.step textarea:focus {
+.step-card input[type=text]:focus,
+.step-card textarea:focus {
   outline: none;
   border-color: var(--gold-600);
   box-shadow: 0 0 0 3px rgba(232, 184, 62, 0.25);
@@ -969,7 +967,9 @@ h2 {
   background: var(--surface-panel);
   border: 1px solid rgba(255, 255, 255, 0.75);
   border-radius: var(--radius-panel);
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
   box-shadow: var(--shadow-glass);
 }
 
@@ -1020,6 +1020,28 @@ tbody td a {
 tbody td a:hover {
   color: var(--red-600);
   text-decoration: underline;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.pagination-status {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-800);
+  min-width: 100px;
+  text-align: center;
+}
+
+.button.disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  pointer-events: none;
 }
 
 /* --------------------------------------------------------------------------
@@ -1427,20 +1449,60 @@ tbody td a:hover {
   color: var(--ink-850);
 }
 
-.form-error {
-  color: #b42318;
+/* Three explicit states so a result is never conveyed by color alone:
+   success (green + check), error (red + alert circle), info/processing
+   (ink + spinning ring). Toggled at runtime via setStatusMessage(). */
+.status-message {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 8px;
   font-size: 13px;
-  font-weight: 500;
-  margin: 6px 0 0;
-  min-height: 20px;
+  line-height: 1.5;
+  margin: 8px 0 0;
 }
 
-.form-message {
+.status-message-icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.status-message-icon svg {
+  width: 16px;
+  height: 16px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.status-message-success {
   color: #15803d;
-  font-size: 13px;
   font-weight: 600;
-  margin: 6px 0 0;
-  min-height: 20px;
+}
+
+.status-message-error {
+  color: #b42318;
+  font-weight: 600;
+}
+
+.status-message-info {
+  color: var(--ink-600);
+  font-weight: 500;
+}
+
+.status-message-info .status-message-icon svg {
+  animation: status-message-spin 900ms linear infinite;
+}
+
+@keyframes status-message-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Applied to a button's own icon while its action is in flight. */
+.icon-spin {
+  animation: status-message-spin 900ms linear infinite;
 }
 
 .empty-state {
@@ -1460,6 +1522,50 @@ tbody td a:hover {
 .empty-state p {
   color: var(--ink-600);
   margin-bottom: 20px;
+}
+
+/* --------------------------------------------------------------------------
+   14b. CONFIRMATION MODAL (destructive / irreversible actions)
+   -------------------------------------------------------------------------- */
+.confirm-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(20, 2, 4, 0.55);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 1099;
+}
+
+.confirm-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1100;
+  width: min(420px, calc(100vw - 32px));
+  background: var(--surface-card);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: var(--radius-panel);
+  box-shadow: var(--shadow-glass);
+  padding: 24px 26px;
+}
+
+.confirm-modal h2 {
+  font-size: 17px;
+  margin-bottom: 10px;
+}
+
+.confirm-modal p {
+  font-size: 13.5px;
+  color: var(--ink-800);
+  line-height: 1.55;
+  margin-bottom: 20px;
+}
+
+.confirm-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
 }
 
 /* --------------------------------------------------------------------------
@@ -1496,7 +1602,14 @@ textarea:focus-visible {
   }
 }
 
-@media (max-width: 980px) {
+/* The full nav (brand + 7 links + status pill) needs ~1281px of app-shell
+   content width to fit on one row without wrapping or shrinking (measured:
+   brand 196px + nav-links 816px + status 153px + gaps/padding 68px, inside
+   app-shell's 48px horizontal padding). Below that, switch to the hamburger
+   drawer rather than let the header overflow the viewport. This threshold
+   is intentionally separate from .grid-2's below - that is a content-density
+   choice unrelated to the header fitting. */
+@media (max-width: 1300px) {
   .nav-links {
     display: none;
   }
@@ -1506,6 +1619,9 @@ textarea:focus-visible {
   .header-status {
     display: none;
   }
+}
+
+@media (max-width: 980px) {
   .grid-2 {
     grid-template-columns: 1fr;
   }

@@ -31,3 +31,15 @@ def build_fixture_tree(root: Path) -> dict[str, Path]:
     broken = root / "25.000.036.001.022_012345678908_Do_Van_H"; broken.mkdir(); pdf(broken / "01.Ly_lich_nguoi_xin_vao_dang.pdf", valid=False)
     completed = root / "25.000.036.001.023_012345678909_Vu_Van_I"; completed.mkdir(); pdf(completed / "01.Ly_lich_nguoi_xin_vao_dang.pdf")
     return {"standard": standard, "malformed": malformed, "multi": multi, "unknown": unknown, "duplicate": duplicate, "missing_p1": missing_p1, "no_file": no_file, "broken": broken, "completed": completed}
+
+
+def build_many_cases(root: Path, count: int) -> list[Path]:
+    """Build `count` distinct, well-formed case folders for pagination/scale tests."""
+    root.mkdir(parents=True, exist_ok=True)
+    folders = []
+    for i in range(count):
+        folder = root / f"25.000.036.001.{i:04d}_09{i:010d}_Case_{i:04d}"
+        folder.mkdir()
+        pdf(folder / "01.Ly_lich_nguoi_xin_vao_dang.pdf")
+        folders.append(folder)
+    return folders

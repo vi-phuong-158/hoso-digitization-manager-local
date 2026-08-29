@@ -51,7 +51,7 @@
     <span>Đánh dấu hoàn thành</span>
   </button>
   {% else %}
-  <button class="button" onclick="postAction('/cases/{{ case.id }}/reopen')">
+  <button class="button" onclick="confirmReopen()" style="border-left:3px solid var(--red-700);margin-left:6px;">
     <svg viewBox="0 0 24 24"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
     <span>Mở lại hồ sơ</span>
   </button>
@@ -61,7 +61,7 @@
     <span>Mở thư mục</span>
   </a>
 </div>
-<div id="case-action-message" class="form-error" role="alert" style="display:none;margin-bottom:16px;"></div>
+<div id="case-action-message" class="status-message" hidden style="margin-bottom:16px;"></div>
 
 <div class="grid-2">
   <!-- Checklist 104 types -->
@@ -181,7 +181,7 @@
 <script>
 async function postAction(url) {
   const msg = document.getElementById('case-action-message');
-  if (msg) { msg.style.display = 'none'; msg.textContent = ''; }
+  setStatusMessage(msg, 'info', 'Đang xử lý...');
   const token = document.cookie.split('csrf_token=')[1]?.split(';')[0] || '';
   try {
     const r = await fetch(url, {
@@ -189,20 +189,25 @@ async function postAction(url) {
       headers: { 'X-CSRF-Token': token }
     });
     if (r.ok) {
+      setStatusMessage(msg, 'success', 'Đã cập nhật hồ sơ.');
       location.reload();
     } else {
       const err = await r.json().catch(() => ({ detail: 'Không thực hiện được thao tác.' }));
-      if (msg) {
-        msg.textContent = '[!] ' + (err.detail || 'Không thực hiện được thao tác.');
-        msg.style.display = 'inline-block';
-      }
+      setStatusMessage(msg, 'error', err.detail || 'Không thực hiện được thao tác.');
     }
   } catch (e) {
-    if (msg) {
-      msg.textContent = '[!] Lỗi kết nối khi gửi thao tác.';
-      msg.style.display = 'inline-block';
-    }
+    setStatusMessage(msg, 'error', 'Lỗi kết nối khi gửi thao tác.');
   }
+}
+
+async function confirmReopen() {
+  const ok = await hosoConfirm(
+    'Mở lại hồ sơ?',
+    'Hồ sơ sẽ chuyển về trạng thái "Chưa xử lý". Thông tin người xác nhận và thời điểm hoàn thành trước đó sẽ được ghi vào nhật ký số hóa, nhưng hồ sơ sẽ không còn hiển thị là đã hoàn thành. Bạn có chắc chắn muốn mở lại hồ sơ này?',
+    'Mở lại hồ sơ'
+  );
+  if (!ok) return;
+  postAction('/cases/{{ case.id }}/reopen');
 }
 
 // Interactive filter for checklist table

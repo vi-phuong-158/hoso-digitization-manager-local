@@ -137,6 +137,17 @@
       </div>
     </aside>
 
+    <!-- Shared confirmation dialog for destructive/irreversible actions -->
+    <div class="confirm-modal-backdrop" id="confirm-modal-backdrop" hidden></div>
+    <div class="confirm-modal" id="confirm-modal" role="alertdialog" aria-modal="true" aria-labelledby="confirm-modal-title" aria-describedby="confirm-modal-message" hidden>
+      <h2 id="confirm-modal-title"></h2>
+      <p id="confirm-modal-message"></p>
+      <div class="confirm-modal-actions">
+        <button type="button" class="button" id="confirm-modal-cancel">Hủy</button>
+        <button type="button" class="button primary" id="confirm-modal-confirm">Xác nhận</button>
+      </div>
+    </div>
+
     <main class="main-content">
       {% block content %}{% endblock %}
     </main>
@@ -214,6 +225,92 @@
         });
       });
     })();
+
+    // Shared confirmation dialog for destructive/irreversible actions.
+    // Usage: const ok = await hosoConfirm('Tiêu đề', 'Nội dung giải thích hậu quả.', 'Nhãn nút xác nhận');
+    function hosoConfirm(title, message, confirmLabel) {
+      return new Promise(resolve => {
+        const backdrop = document.getElementById('confirm-modal-backdrop');
+        const modal = document.getElementById('confirm-modal');
+        const titleEl = document.getElementById('confirm-modal-title');
+        const messageEl = document.getElementById('confirm-modal-message');
+        const confirmBtn = document.getElementById('confirm-modal-confirm');
+        const cancelBtn = document.getElementById('confirm-modal-cancel');
+        if (!backdrop || !modal || !titleEl || !messageEl || !confirmBtn || !cancelBtn) {
+          resolve(window.confirm(message));
+          return;
+        }
+        titleEl.textContent = title;
+        messageEl.textContent = message;
+        confirmBtn.textContent = confirmLabel || 'Xác nhận';
+        const previouslyFocused = document.activeElement;
+        const focusables = [cancelBtn, confirmBtn];
+
+        function cleanup(result) {
+          backdrop.hidden = true;
+          modal.hidden = true;
+          confirmBtn.removeEventListener('click', onConfirm);
+          cancelBtn.removeEventListener('click', onCancel);
+          backdrop.removeEventListener('click', onCancel);
+          document.removeEventListener('keydown', onKeydown);
+          if (previouslyFocused && typeof previouslyFocused.focus === 'function') {
+            previouslyFocused.focus();
+          }
+          resolve(result);
+        }
+        function onConfirm() { cleanup(true); }
+        function onCancel() { cleanup(false); }
+        function onKeydown(e) {
+          if (e.key === 'Escape') { e.preventDefault(); cleanup(false); return; }
+          if (e.key === 'Tab') {
+            const idx = focusables.indexOf(document.activeElement);
+            if (e.shiftKey && idx <= 0) { e.preventDefault(); focusables[focusables.length - 1].focus(); }
+            else if (!e.shiftKey && idx === focusables.length - 1) { e.preventDefault(); focusables[0].focus(); }
+          }
+        }
+
+        confirmBtn.addEventListener('click', onConfirm);
+        cancelBtn.addEventListener('click', onCancel);
+        backdrop.addEventListener('click', onCancel);
+        document.addEventListener('keydown', onKeydown);
+
+        backdrop.hidden = false;
+        modal.hidden = false;
+        confirmBtn.focus();
+      });
+    }
+    window.hosoConfirm = hosoConfirm;
+
+    // Shared three-state status message: 'success' | 'error' | 'info'.
+    // Never relies on color alone - each state carries its own icon, and
+    // errors use role="alert" (assertive) while success/info use role="status"
+    // (polite), so a screen reader user gets the right level of interruption.
+    const STATUS_MESSAGE_ICONS = {
+      success: '<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>',
+      error: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>',
+      info: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-dasharray="42" stroke-dashoffset="14"/></svg>',
+    };
+    function setStatusMessage(el, kind, text) {
+      if (!el) return;
+      el.innerHTML = '';
+      if (!text) {
+        el.hidden = true;
+        el.removeAttribute('role');
+        return;
+      }
+      el.hidden = false;
+      el.className = 'status-message status-message-' + kind;
+      el.setAttribute('role', kind === 'error' ? 'alert' : 'status');
+      const iconWrap = document.createElement('span');
+      iconWrap.className = 'status-message-icon';
+      iconWrap.setAttribute('aria-hidden', 'true');
+      iconWrap.innerHTML = STATUS_MESSAGE_ICONS[kind] || '';
+      const textSpan = document.createElement('span');
+      textSpan.textContent = text;
+      el.appendChild(iconWrap);
+      el.appendChild(textSpan);
+    }
+    window.setStatusMessage = setStatusMessage;
   </script>
 </body>
 </html>

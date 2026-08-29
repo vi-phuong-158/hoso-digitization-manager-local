@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import os
+from datetime import datetime, timezone
 from pathlib import Path
+from urllib.parse import urlencode
 
 from fastapi import File, Form, Request, UploadFile
 from fastapi.responses import FileResponse, JSONResponse, RedirectResponse
@@ -134,8 +136,9 @@ def register_routes(app, cfg: Settings, db: Database, templates: Jinja2Templates
             return JSONResponse({"detail": str(exc)}, status_code=400)
 
     @app.get("/cases")
-    def cases(request: Request, q: str = "", status: str = "", unit: str = "", warning: int = 0, missing_p1: int = 0, page: int = 1, sort: str = "updated"):
+    def cases(request: Request, q: str = "", status: str = "", unit: str = "", warning: int = 0, missing_p1: int = 0, page: int = 1, page_size: int = 50, sort: str = "updated"):
         page = max(page, 1)
+        page_size = min(max(page_size, 1), 200)
         where, params = ["c.is_present=1"], []
         if q:
             where.append("(c.person_name_display LIKE ? OR c.person_name_raw LIKE ? OR c.citizen_id LIKE ?)")
@@ -148,14 +151,29 @@ def register_routes(app, cfg: Settings, db: Database, templates: Jinja2Templates
             where.append("EXISTS (SELECT 1 FROM warnings w WHERE w.case_id=c.id AND w.active=1)")
         if missing_p1:
             where.append("c.missing_priority1_count>0")
+        where_sql = " AND ".join(where)
+        total = db.one(f"SELECT COUNT(*) AS n FROM cases c WHERE {where_sql}", tuple(params))["n"]
+        total_pages = max(1, -(-total // page_size))
+        page = min(page, total_pages)
         order = {"updated": "c.last_scanned_at DESC", "progress": "c.progress_percent ASC", "name": "COALESCE(c.person_name_display,c.folder_name) COLLATE NOCASE"}.get(sort, "c.last_scanned_at DESC")
-        params.append((page - 1) * 100)
-        rows = [dict(row) for row in db.all("SELECT c.* FROM cases c WHERE " + " AND ".join(where) + f" ORDER BY {order} LIMIT 100 OFFSET ?", tuple(params))]
-        for row in rows:
-            row["type_count"] = db.one("SELECT COUNT(DISTINCT taxonomy_code) AS n FROM documents WHERE case_id=? AND is_present=1 AND parse_status='OK' AND taxonomy_code IS NOT NULL", (row["id"],))["n"]
-            row["missing_type_count"] = max(0, len(taxonomy.items) - row["type_count"])
-        context = {"rows": rows, "q": q, "status": status, "unit": unit, "warning": warning, "missing_p1": missing_p1, "sort": sort, "units": [row["unit_code"] for row in db.all("SELECT DISTINCT unit_code FROM cases WHERE is_present=1 AND unit_code IS NOT NULL ORDER BY unit_code")]}
-        return {"items": rows, "page": page, "count": len(rows)} if _json_requested(request) else templates.TemplateResponse(request=request, name="cases.html", context=context)
+        list_params = tuple(params) + (page_size, (page - 1) * page_size)
+        rows = [dict(row) for row in db.all(f"SELECT c.* FROM cases c WHERE {where_sql} ORDER BY {order} LIMIT ? OFFSET ?", list_params)]
+        filter_params: dict[str, str | int] = {}
+        if q: filter_params["q"] = q
+        if status: filter_params["status"] = status
+        if unit: filter_params["unit"] = unit
+        if warning: filter_params["warning"] = 1
+        if missing_p1: filter_params["missing_p1"] = 1
+        if sort != "updated": filter_params["sort"] = sort
+        if page_size != 50: filter_params["page_size"] = page_size
+        base_qs = urlencode(filter_params)
+        context = {
+            "rows": rows, "q": q, "status": status, "unit": unit, "warning": warning, "missing_p1": missing_p1, "sort": sort,
+            "page": page, "page_size": page_size, "total": total, "total_pages": total_pages, "base_qs": base_qs,
+            "units": [row["unit_code"] for row in db.all("SELECT DISTINCT unit_code FROM cases WHERE is_present=1 AND unit_code IS NOT NULL ORDER BY unit_code")],
+        }
+        return ({"items": rows, "page": page, "page_size": page_size, "total": total, "total_pages": total_pages, "count": len(rows)}
+                if _json_requested(request) else templates.TemplateResponse(request=request, name="cases.html", context=context))
 
     @app.get("/reviews")
     def reviews(request: Request):
@@ -231,11 +249,14 @@ def register_routes(app, cfg: Settings, db: Database, templates: Jinja2Templates
 
     @app.get("/backup")
     def backup_page(request: Request):
-        if _json_requested(request): return _backup(db, cfg)
+        if _json_requested(request):
+            return {"data_root": str(cfg.data_root), "database_path": str(cfg.database_path)}
         return templates.TemplateResponse(request=request, name="backup.html", context={"data_root": cfg.data_root, "database_path": cfg.database_path})
 
-    @app.get("/backup/metadata")
-    def backup_metadata(): return _backup(db, cfg)
+    @app.post("/backup")
+    async def backup_now(request: Request):
+        if not _csrf_valid(request): return JSONResponse({"detail": "CSRF token không hợp lệ"}, status_code=403)
+        return _backup(db, cfg)
 
     @app.get("/scan-runs")
     def scan_runs(): return {"items": [dict(row) for row in db.all("SELECT * FROM scan_runs ORDER BY id DESC LIMIT 50")]}
@@ -261,7 +282,11 @@ def register_routes(app, cfg: Settings, db: Database, templates: Jinja2Templates
 
 
 def _backup(db: Database, cfg: Settings) -> dict:
-    target = cfg.database_path.with_name(cfg.database_path.stem + ".backup.sqlite")
+    # Timestamped (to the microsecond) so each backup is its own file instead
+    # of silently overwriting the previous one - the operator's only safety
+    # net if the live database is corrupted between backups.
+    stamp = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S-%f")
+    target = cfg.database_path.with_name(f"{cfg.database_path.stem}.backup.{stamp}.sqlite")
     db.backup_to(target)
     return {"ok": True, "path": str(target), "metadata_only": True}
 

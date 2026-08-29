@@ -24,6 +24,8 @@ CREATE TABLE IF NOT EXISTS cases (
   document_count INTEGER NOT NULL DEFAULT 0,
   warning_count INTEGER NOT NULL DEFAULT 0,
   missing_priority1_count INTEGER NOT NULL DEFAULT 0,
+  type_count INTEGER NOT NULL DEFAULT 0,
+  missing_type_count INTEGER NOT NULL DEFAULT 0,
   is_present INTEGER NOT NULL DEFAULT 1,
   first_seen_at TEXT NOT NULL,
   last_seen_at TEXT NOT NULL,
@@ -117,6 +119,14 @@ CREATE INDEX IF NOT EXISTS idx_warnings_case_active ON warnings(case_id, active)
 CREATE INDEX IF NOT EXISTS idx_cases_status ON cases(effective_status);
 """
 
+# Columns added after the original release. CREATE TABLE IF NOT EXISTS does not
+# retrofit an existing database file, so each entry is applied via
+# ALTER TABLE ADD COLUMN when missing, keeping upgrades of installed data safe.
+_ADDED_COLUMNS: tuple[tuple[str, str, str], ...] = (
+    ("cases", "type_count", "INTEGER NOT NULL DEFAULT 0"),
+    ("cases", "missing_type_count", "INTEGER NOT NULL DEFAULT 0"),
+)
+
 
 class Database:
     def __init__(self, path: str | Path):
@@ -134,6 +144,15 @@ class Database:
     def initialize(self) -> None:
         with self.connect() as conn:
             conn.executescript(SCHEMA)
+            self._apply_column_migrations(conn)
+            conn.commit()
+
+    def _apply_column_migrations(self, conn: sqlite3.Connection) -> None:
+        for table, column, ddl in _ADDED_COLUMNS:
+            existing = {row["name"] for row in conn.execute(f"PRAGMA table_info({table})").fetchall()}
+            if column not in existing:
+                conn.execute(f"ALTER TABLE {table} ADD COLUMN {column} {ddl}")
+
     def backup_to(self, target: str | Path) -> Path:
         """Create a consistent SQLite metadata-only backup."""
         destination = Path(target)

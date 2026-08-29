@@ -169,35 +169,44 @@
   <span><strong>Trạng thái kho hồ sơ:</strong> Sẵn sàng · Hoạt động cục bộ</span>
   <span>Lần quét gần nhất: <strong class="tabular">{{ last_run.ended_at|format_datetime if last_run and last_run.ended_at else 'Chưa quét' }}</strong></span>
 </div>
-<div id="dashboard-scan-message" class="form-error" role="alert" style="display:none;margin-top:8px;"></div>
+<div id="dashboard-scan-message" class="status-message" hidden style="margin-top:8px;"></div>
 
 <script>
+let dashboardScanInFlight = false;
+
 async function postScan() {
+  if (dashboardScanInFlight) return;
   const btn = document.getElementById('btn-scan');
+  const btnLabel = btn ? btn.querySelector('span') : null;
+  const btnIcon = btn ? btn.querySelector('svg') : null;
   const msg = document.getElementById('dashboard-scan-message');
-  if (msg) { msg.style.display = 'none'; msg.textContent = ''; }
-  if (btn) { btn.disabled = true; btn.textContent = 'Đang quét...'; }
+  dashboardScanInFlight = true;
+  setStatusMessage(msg, 'info', 'Đang quét kho hồ sơ, vui lòng không đóng cửa sổ...');
+  if (btn) { btn.disabled = true; }
+  if (btnLabel) { btnLabel.textContent = 'Đang quét...'; }
+  if (btnIcon) { btnIcon.classList.add('icon-spin'); }
   const token = document.cookie.split('csrf_token=')[1]?.split(';')[0] || '';
   try {
     const response = await fetch('/scan', {
       method: 'POST',
       headers: { 'X-CSRF-Token': token }
     });
-    if (response.ok) {
+    const data = await response.json().catch(() => ({}));
+    if (response.ok && data.status !== 'ERROR') {
+      const extra = data.warnings_created ? `, ${data.warnings_created} cảnh báo mới` : '';
+      setStatusMessage(msg, 'success', `Quét hoàn tất: ${data.folders_seen || 0} hồ sơ, ${data.files_seen || 0} tệp PDF${extra}.`);
       location.reload();
-    } else {
-      if (msg) {
-        msg.textContent = '[!] Không thể quét kho hồ sơ.';
-        msg.style.display = 'inline-block';
-      }
-      if (btn) { btn.disabled = false; btn.textContent = 'Quét lại dữ liệu'; }
+      return;
     }
+    const detail = (data.error_messages && data.error_messages[0]) || data.detail || 'Không thể quét kho hồ sơ.';
+    setStatusMessage(msg, 'error', detail);
   } catch (err) {
-    if (msg) {
-      msg.textContent = '[!] Lỗi kết nối khi quét kho hồ sơ.';
-      msg.style.display = 'inline-block';
-    }
-    if (btn) { btn.disabled = false; btn.textContent = 'Quét lại dữ liệu'; }
+    setStatusMessage(msg, 'error', 'Lỗi kết nối khi quét kho hồ sơ.');
+  } finally {
+    dashboardScanInFlight = false;
+    if (btn) { btn.disabled = false; }
+    if (btnLabel) { btnLabel.textContent = 'Quét lại dữ liệu'; }
+    if (btnIcon) { btnIcon.classList.remove('icon-spin'); }
   }
 }
 </script>

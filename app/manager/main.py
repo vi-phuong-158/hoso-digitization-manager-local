@@ -52,9 +52,18 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     async def update_settings(request: Request):
         if not _csrf_valid(request): return JSONResponse({"detail": "CSRF token không hợp lệ"}, status_code=403)
         payload = await _payload(request)
+        previous_data_root, previous_open_browser = cfg.data_root, cfg.open_browser_on_start
         if "data_root" in payload: cfg.data_root = Path(str(payload["data_root"])).resolve()
         if "open_browser_on_start" in payload: cfg.open_browser_on_start = str(payload["open_browser_on_start"]).lower() in {"1", "true", "on", "yes"}
-        cfg.validate(); cfg.save(); return cfg.as_dict()
+        try:
+            cfg.validate()
+        except ValueError as exc:
+            # Roll back the in-memory config so a rejected save can never leave
+            # the running app silently pointed at an unvalidated data_root.
+            cfg.data_root, cfg.open_browser_on_start = previous_data_root, previous_open_browser
+            return JSONResponse({"detail": str(exc)}, status_code=400)
+        cfg.save()
+        return cfg.as_dict()
 
     register_routes(app, cfg, db, templates)
     return app

@@ -101,6 +101,8 @@ def recompute_case(conn, case_id: int, at: str | None = None) -> dict[str, Any]:
     ).fetchone()["n"] > 0
     missing_p1 = sum(1 for row in checklist if row["priority"] == 1 and row["status"] == "CAN_BO_SUNG")
     has_can_bo_sung = any(row["status"] == "CAN_BO_SUNG" for row in checklist)
+    type_count = sum(1 for row in checklist if row["status"] == "CO_TAI_LIEU")
+    missing_type_count = sum(1 for row in checklist if row["status"] == "CAN_BO_SUNG")
     if valid_docs == 0:
         auto = "CHUA_XU_LY"
     elif review_pending:
@@ -114,8 +116,8 @@ def recompute_case(conn, case_id: int, at: str | None = None) -> dict[str, Any]:
     warning_count = conn.execute("SELECT COUNT(*) AS n FROM warnings WHERE case_id=? AND active=1", (case_id,)).fetchone()["n"]
     conn.execute(
         """UPDATE cases SET auto_status=?,effective_status=?,progress_percent=?,document_count=?,warning_count=?,
-           missing_priority1_count=?,last_scanned_at=COALESCE(last_scanned_at,?) WHERE id=?""",
-        (auto, effective, percent, valid_docs, warning_count, missing_p1, at, case_id),
+           missing_priority1_count=?,type_count=?,missing_type_count=?,last_scanned_at=COALESCE(last_scanned_at,?) WHERE id=?""",
+        (auto, effective, percent, valid_docs, warning_count, missing_p1, type_count, missing_type_count, at, case_id),
     )
     if case["effective_status"] != effective:
         conn.execute(
@@ -124,6 +126,7 @@ def recompute_case(conn, case_id: int, at: str | None = None) -> dict[str, Any]:
         )
     return {"auto_status": auto, "effective_status": effective, "progress_percent": percent,
             "document_count": valid_docs, "warning_count": warning_count, "missing_priority1_count": missing_p1,
+            "type_count": type_count, "missing_type_count": missing_type_count,
             "checklist": checklist}
 
 
@@ -169,12 +172,19 @@ def mark_complete(conn, case_id: int, reviewed_by: str | None = None) -> dict[st
 
 
 def reopen(conn, case_id: int) -> dict[str, Any]:
-    case = conn.execute("SELECT effective_status FROM cases WHERE id=?", (case_id,)).fetchone()
+    case = conn.execute("SELECT effective_status,completed_at,reviewed_by FROM cases WHERE id=?", (case_id,)).fetchone()
     if case is None:
         raise ValueError("Không tìm thấy hồ sơ")
     at = now()
+    # Reopening clears the *current* completion state, but the fact that this
+    # case was once completed - by whom, and when - must stay discoverable in
+    # the audit trail rather than being overwritten with NULLs and lost.
+    detail = (
+        f"Hồ sơ từng được đánh dấu hoàn thành lúc {case['completed_at']} bởi {case['reviewed_by'] or 'không xác định'}."
+        if case["completed_at"] else None
+    )
     conn.execute("UPDATE cases SET manual_status=NULL,effective_status='CHUA_XU_LY',completed_at=NULL,reviewed_by=NULL WHERE id=?", (case_id,))
-    conn.execute("INSERT INTO case_history(case_id,event_type,from_status,to_status,created_at) VALUES(?,?,?,?,?)", (case_id, "REOPENED", case["effective_status"], "CHUA_XU_LY", at))
+    conn.execute("INSERT INTO case_history(case_id,event_type,from_status,to_status,detail,created_at) VALUES(?,?,?,?,?,?)", (case_id, "REOPENED", case["effective_status"], "CHUA_XU_LY", detail, at))
     return recompute_case(conn, case_id, at)
 
 

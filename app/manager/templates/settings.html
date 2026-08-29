@@ -60,48 +60,84 @@
       </button>
     </div>
     
-    <p id="settings-message" class="form-message" role="status" style="margin-top:14px;"></p>
+    <div id="settings-message" class="status-message" hidden style="margin-top:14px;"></div>
   </form>
 </div>
 
 <script>
 const token = () => document.cookie.split('csrf_token=')[1]?.split(';')[0] || '';
+const settingsMsg = () => document.getElementById('settings-message');
+const saveBtn = document.querySelector('#settings-form button[type=submit]');
+const rescanBtn = document.getElementById('rescan');
 
-document.getElementById('settings-form').onsubmit = async e => {
+// Single source of truth for persisting settings. Resolves once the server
+// has actually confirmed the write - never guessed via a timer.
+async function saveSettings() {
+  const r = await fetch('/settings', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRF-Token': token()
+    },
+    body: JSON.stringify({ data_root: document.getElementById('data_root').value })
+  });
+  const data = await r.json().catch(() => ({}));
+  return { ok: r.ok, data };
+}
+
+document.getElementById('settings-form').addEventListener('submit', async e => {
   e.preventDefault();
-  const msg = document.getElementById('settings-message');
-  msg.textContent = 'Đang lưu cấu hình...';
+  saveBtn.disabled = true;
+  setStatusMessage(settingsMsg(), 'info', 'Đang lưu cấu hình...');
   try {
-    const r = await fetch('/settings', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRF-Token': token()
-      },
-      body: JSON.stringify({ data_root: document.getElementById('data_root').value })
-    });
-    const d = await r.json();
-    msg.textContent = r.ok ? 'Đã lưu thành công cấu hình cài đặt.' : (d.detail || 'Không lưu được cài đặt.');
-  } catch (err) {
-    msg.textContent = 'Lỗi kết nối khi lưu cài đặt.';
-  }
-};
-
-document.getElementById('rescan').onclick = async () => {
-  const msg = document.getElementById('settings-message');
-  document.getElementById('settings-form').requestSubmit();
-  setTimeout(async () => {
-    msg.textContent = 'Đang quét kho hồ sơ...';
-    try {
-      const r = await fetch('/scan', {
-        method: 'POST',
-        headers: { 'X-CSRF-Token': token() }
-      });
-      msg.textContent = r.ok ? 'Đã lưu cấu hình và hoàn tất quét lại kho hồ sơ.' : 'Không thể quét kho hồ sơ.';
-    } catch (err) {
-      msg.textContent = 'Lỗi kết nối khi quét kho hồ sơ.';
+    const { ok, data } = await saveSettings();
+    if (ok) {
+      setStatusMessage(settingsMsg(), 'success', 'Đã lưu thành công cấu hình cài đặt.');
+    } else {
+      setStatusMessage(settingsMsg(), 'error', data.detail || 'Không lưu được cài đặt.');
     }
-  }, 350);
-};
+  } catch (err) {
+    setStatusMessage(settingsMsg(), 'error', 'Lỗi kết nối khi lưu cài đặt.');
+  } finally {
+    saveBtn.disabled = false;
+  }
+});
+
+rescanBtn.addEventListener('click', async () => {
+  rescanBtn.disabled = true;
+  setStatusMessage(settingsMsg(), 'info', 'Đang lưu cấu hình...');
+  let saved;
+  try {
+    saved = await saveSettings();
+  } catch (err) {
+    setStatusMessage(settingsMsg(), 'error', 'Lỗi kết nối khi lưu cài đặt. Chưa quét lại kho hồ sơ.');
+    rescanBtn.disabled = false;
+    return;
+  }
+  if (!saved.ok) {
+    setStatusMessage(settingsMsg(), 'error', (saved.data.detail || 'Không lưu được cài đặt.') + ' Chưa quét lại kho hồ sơ.');
+    rescanBtn.disabled = false;
+    return;
+  }
+  setStatusMessage(settingsMsg(), 'info', 'Đã lưu cấu hình. Đang quét kho hồ sơ, vui lòng không đóng cửa sổ...');
+  try {
+    const r = await fetch('/scan', {
+      method: 'POST',
+      headers: { 'X-CSRF-Token': token() }
+    });
+    const d = await r.json().catch(() => ({}));
+    if (r.ok && d.status !== 'ERROR') {
+      const extra = d.warnings_created ? `, ${d.warnings_created} cảnh báo mới` : '';
+      setStatusMessage(settingsMsg(), 'success', `Đã lưu cấu hình và quét xong: ${d.folders_seen || 0} hồ sơ, ${d.files_seen || 0} tệp PDF${extra}.`);
+    } else {
+      const detail = (d.error_messages && d.error_messages[0]) || d.detail || 'Không thể quét kho hồ sơ.';
+      setStatusMessage(settingsMsg(), 'error', 'Đã lưu cấu hình, nhưng quét kho hồ sơ thất bại: ' + detail);
+    }
+  } catch (err) {
+    setStatusMessage(settingsMsg(), 'error', 'Đã lưu cấu hình, nhưng lỗi kết nối khi quét kho hồ sơ.');
+  } finally {
+    rescanBtn.disabled = false;
+  }
+});
 </script>
 {% endblock %}

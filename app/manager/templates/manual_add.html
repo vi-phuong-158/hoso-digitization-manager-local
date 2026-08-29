@@ -47,7 +47,7 @@
         <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
         <span>Tạo bản xem trước các trang</span>
       </button>
-      <p id="prepare-error" class="form-error" role="alert"></p>
+      <div id="prepare-error" class="status-message" hidden></div>
     </div>
   </div>
 
@@ -108,7 +108,7 @@
       </button>
       <button class="button" id="discard" disabled>Hủy / Chọn lại tệp</button>
     </div>
-    <p id="save-message" class="form-message" role="status"></p>
+    <div id="save-message" class="status-message" hidden></div>
   </div>
 </div>
 
@@ -118,8 +118,14 @@ let state = { token: null, pages: [] };
 const $ = id => document.getElementById(id);
 const csrf = () => document.cookie.split('csrf_token=')[1]?.split(';')[0] || '';
 
-function showError(message) {
-  $('prepare-error').textContent = message || '';
+function setPrepareError(message) {
+  setStatusMessage($('prepare-error'), 'error', message);
+}
+function setPrepareInfo(message) {
+  setStatusMessage($('prepare-error'), 'info', message);
+}
+function clearPrepareStatus() {
+  setStatusMessage($('prepare-error'), 'error', '');
 }
 
 function selectedCase() {
@@ -206,10 +212,13 @@ function renderPages() {
         updateSummary();
       }
     });
-    card.addEventListener('click', e => {
+    card.addEventListener('click', async e => {
       const action = e.target.dataset.action;
       if (!action) return;
       if (action === 'delete') {
+        const label = page.source_name + (page.source_page ? ' · trang ' + page.source_page : '');
+        const ok = await hosoConfirm('Xóa trang này?', `Trang "${label}" sẽ bị xóa khỏi bản xem trước. Việc này không xóa tệp gốc trên máy, nhưng bạn sẽ phải nạp lại trang này nếu muốn thêm lại. Bạn có chắc chắn muốn xóa?`, 'Xóa trang');
+        if (!ok) return;
         state.pages = state.pages.filter(p => p.id !== page.id);
       } else {
         page.rotation = ((page.rotation || 0) + (action === 'right' ? 90 : 270)) % 360;
@@ -221,21 +230,36 @@ function renderPages() {
   });
 }
 
+// Monotonic guard: if the case/type selection changes again before an
+// in-flight name-preview request resolves, that stale response must never
+// be allowed to overwrite the filename for the *current* selection -
+// otherwise the Confirm step could show a name that does not match what
+// will actually be saved.
+let filenameRequestId = 0;
+
 async function updateFilename() {
+  const requestId = ++filenameRequestId;
   if (!selectedCase() || !$('type_id').value) {
     $('filename-preview').textContent = 'Chưa chọn loại';
     return;
   }
+  $('filename-preview').textContent = 'Đang tính tên tệp...';
   try {
     const r = await fetch(`/manual-documents/name-preview?case_id=${encodeURIComponent(selectedCase())}&type_id=${encodeURIComponent($('type_id').value)}`, {
       headers: { Accept: 'application/json' }
     });
+    if (requestId !== filenameRequestId) return;
     if (r.ok) {
       const data = await r.json();
+      if (requestId !== filenameRequestId) return;
       $('filename-preview').textContent = data.filename;
+    } else {
+      $('filename-preview').textContent = 'Lỗi tính tên tệp';
     }
   } catch (err) {
-    $('filename-preview').textContent = 'Lỗi tính tên tệp';
+    if (requestId === filenameRequestId) {
+      $('filename-preview').textContent = 'Lỗi tính tên tệp';
+    }
   }
 }
 
@@ -252,20 +276,20 @@ function updateSummary() {
 }
 
 $('type-search').addEventListener('input', renderTypes);
-$('type_id').addEventListener('change', () => { updateFilename(); updateSummary(); });
-$('case_id').addEventListener('change', () => { updateFilename(); updateSummary(); });
+$('type_id').addEventListener('change', async () => { await updateFilename(); updateSummary(); });
+$('case_id').addEventListener('change', async () => { await updateFilename(); updateSummary(); });
 
 $('prepare').addEventListener('click', async () => {
-  showError('');
-  if (!selectedCase()) return showError('Hãy chọn hồ sơ Đảng viên tiếp nhận.');
-  if (!$('files').files.length) return showError('Hãy chọn ít nhất một ảnh scan hoặc tệp PDF.');
-  
+  clearPrepareStatus();
+  if (!selectedCase()) return setPrepareError('Hãy chọn hồ sơ Đảng viên tiếp nhận.');
+  if (!$('files').files.length) return setPrepareError('Hãy chọn ít nhất một ảnh scan hoặc tệp PDF.');
+
   const form = new FormData();
   form.append('case_id', selectedCase());
   [...$('files').files].forEach(f => form.append('files', f));
-  
+
   $('prepare').disabled = true;
-  showError('Đang xử lý tạo bản xem trước...');
+  setPrepareInfo('Đang xử lý tạo bản xem trước...');
   try {
     const r = await fetch('/manual-documents/prepare', {
       method: 'POST',
@@ -274,19 +298,27 @@ $('prepare').addEventListener('click', async () => {
     });
     const data = await r.json().catch(() => ({ detail: 'Không tạo được bản xem trước.' }));
     $('prepare').disabled = false;
-    if (!r.ok) return showError(data.detail || 'Không tạo được bản xem trước.');
-    showError('');
+    if (!r.ok) return setPrepareError(data.detail || 'Không tạo được bản xem trước.');
+    clearPrepareStatus();
     state = { token: data.token, pages: data.pages.map(p => ({ ...p, rotation: 0 })) };
     renderPages();
     renderTypes();
     updateSummary();
   } catch (err) {
     $('prepare').disabled = false;
-    showError('Lỗi kết nối khi gửi dữ liệu.');
+    setPrepareError('Lỗi kết nối khi gửi dữ liệu.');
   }
 });
 
 $('discard').addEventListener('click', async () => {
+  if (state.pages.length) {
+    const ok = await hosoConfirm(
+      'Hủy toàn bộ bản xem trước?',
+      `Bạn đã nạp ${state.pages.length} trang. Hủy sẽ xóa toàn bộ bản xem trước này (tệp gốc trên máy không bị ảnh hưởng), và bạn sẽ phải chọn lại tệp từ Bước 1. Bạn có chắc chắn muốn hủy?`,
+      'Hủy toàn bộ'
+    );
+    if (!ok) return;
+  }
   if (state.token) {
     await fetch('/manual-documents/' + state.token, {
       method: 'DELETE',
@@ -302,7 +334,7 @@ $('discard').addEventListener('click', async () => {
 
 $('save').addEventListener('click', async () => {
   $('save').disabled = true;
-  $('save-message').textContent = 'Đang lưu tài liệu vào hồ sơ...';
+  setStatusMessage($('save-message'), 'info', 'Đang lưu tài liệu vào hồ sơ...');
   try {
     const r = await fetch('/manual-documents/save', {
       method: 'POST',
@@ -319,9 +351,10 @@ $('save').addEventListener('click', async () => {
     const data = await r.json().catch(() => ({ detail: 'Không lưu được tài liệu.' }));
     if (!r.ok) {
       $('save').disabled = false;
-      return $('save-message').textContent = data.detail || 'Không lưu được tài liệu.';
+      setStatusMessage($('save-message'), 'error', data.detail || 'Không lưu được tài liệu.');
+      return;
     }
-    $('save-message').textContent = 'Đã lưu thành công: ' + data.filename;
+    setStatusMessage($('save-message'), 'success', 'Đã lưu thành công: ' + data.filename);
     state = { token: null, pages: [] };
     $('files').value = '';
     updateSelectedFilesList();
@@ -329,7 +362,7 @@ $('save').addEventListener('click', async () => {
     updateSummary();
   } catch (err) {
     $('save').disabled = false;
-    $('save-message').textContent = 'Lỗi kết nối khi lưu tài liệu.';
+    setStatusMessage($('save-message'), 'error', 'Lỗi kết nối khi lưu tài liệu.');
   }
 });
 

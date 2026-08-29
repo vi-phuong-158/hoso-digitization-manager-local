@@ -1602,7 +1602,14 @@ textarea:focus-visible {
   }
 }
 
-@media (max-width: 980px) {
+/* The full nav (brand + 7 links + status pill) needs ~1281px of app-shell
+   content width to fit on one row without wrapping or shrinking (measured:
+   brand 196px + nav-links 816px + status 153px + gaps/padding 68px, inside
+   app-shell's 48px horizontal padding). Below that, switch to the hamburger
+   drawer rather than let the header overflow the viewport. This threshold
+   is intentionally separate from .grid-2's below - that is a content-density
+   choice unrelated to the header fitting. */
+@media (max-width: 1300px) {
   .nav-links {
     display: none;
   }
@@ -1612,6 +1619,9 @@ textarea:focus-visible {
   .header-status {
     display: none;
   }
+}
+
+@media (max-width: 980px) {
   .grid-2 {
     grid-template-columns: 1fr;
   }

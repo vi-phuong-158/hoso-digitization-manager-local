@@ -75,3 +75,55 @@ def test_missing_count_cell_no_longer_uses_the_failing_literal_hex():
     html = (Path(__file__).resolve().parents[2] / "app" / "manager" / "templates" / "cases.html").read_text(encoding="utf-8")
     assert "#b78118" not in html
     assert "var(--status-supplement-text)" in html
+
+
+# ---------------------------------------------------------------------------
+# Round 1.5: the full nav (brand + 7 links + status pill) measured ~1281px
+# of required app-shell content width in a real browser. The hamburger
+# breakpoint must sit at or above that so 1180/1100/1024/980px never
+# overflow, while 1366/1920 keep the full nav unchanged. .grid-2's own
+# breakpoint is a separate, unrelated content-density choice and must not
+# have been dragged along with this fix.
+# ---------------------------------------------------------------------------
+
+
+def _media_query_block(css: str, max_width: int) -> str:
+    pattern = re.compile(r"@media \(max-width:\s*" + str(max_width) + r"px\)\s*\{(.*?)\n\}\n", re.S)
+    match = pattern.search(css)
+    assert match is not None, f"@media (max-width: {max_width}px) block not found"
+    return match.group(1)
+
+
+def test_nav_collapses_at_a_breakpoint_that_actually_fits_measured_content():
+    css = CSS_PATH.read_text(encoding="utf-8")
+    # Measured natural minimum: brand 195.7 + nav-links 815.8 + status 153.4
+    # + 2*16 gap + 2*18 padding = 1232.9px header width, needing >= 1280.9px
+    # of app-shell content width (app-shell padding is 48px total).
+    measured_minimum_viewport = 195.7 + 815.8 + 153.4 + 2 * 16 + 2 * 18 + 48
+    assert measured_minimum_viewport <= 1281, "sanity check on the measurement itself"
+
+    block = _media_query_block(css, 1300)
+    assert 1300 >= measured_minimum_viewport, "the breakpoint must clear the measured minimum with margin"
+    assert ".nav-links" in block and "display: none" in block
+    assert ".nav-toggle" in block and "display: inline-flex" in block
+    assert ".header-status" in block and "display: none" in block
+
+
+def test_grid_2_breakpoint_is_independent_of_the_nav_fix():
+    css = CSS_PATH.read_text(encoding="utf-8")
+    nav_block = _media_query_block(css, 1300)
+    assert ".grid-2" not in nav_block, ".grid-2 must not be coupled to the nav breakpoint - unrelated concern"
+    grid_block = _media_query_block(css, 980)
+    assert ".grid-2" in grid_block
+    assert ".nav-links" not in grid_block and ".header-status" not in grid_block
+
+
+def test_no_desktop_breakpoint_regressed_below_1300():
+    # 1366x768 and 1920x1080 must keep showing the full nav: there must be
+    # no max-width media query between 1300 and 1920 that also hides it.
+    css = CSS_PATH.read_text(encoding="utf-8")
+    for width in re.findall(r"@media \(max-width:\s*(\d+)px\)", css):
+        w = int(width)
+        if 1300 < w < 1920:
+            block = _media_query_block(css, w)
+            assert ".nav-links" not in block, f"unexpected nav-links rule in @media (max-width: {w}px)"
